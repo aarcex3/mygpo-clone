@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "mygpo-clone"
+version = "0.1.0"
+description = "A simple clone of Gpodder.net"
+authors = ["Agustin Arce <agustinarceprincich@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = {extras = ["all"], version = "^0.111.0"}
+uvicorn = "^0.30.1"
+pydantic = "^2.8.2"
+authx = "^1.2.1"
+itsdangerous = "^2.2.0"
+sqlmodel = "^0.0.19"
+
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+pytest-sugar = "^1.0.0"
+pytest-xdist = "^3.6.1"
+pytest-anyio = "^0.0.0"
+black = "^24.4.2"
+pylint = "^3.2.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
