@@ -1,3 +1,7 @@
+"""
+Main entry point for the app
+"""
+
 from fastapi import FastAPI
 import uvicorn
 
