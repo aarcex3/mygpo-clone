@@ -8,7 +8,7 @@ Subscriptions routes
 router = APIRouter(prefix="/subscriptions", tags=["Subscriptions"])
 
 
-@router.get("/{username}/{device_id}.{format}", response_model=ORJSONResponse)
+@router.get("/{username}/{device_id}.{format}")
 async def get_device_subscriptions(username: str, device_id: str, format: str):
     """
     Get the subscriptions for a specific device belonging to a user.
@@ -24,7 +24,7 @@ async def get_device_subscriptions(username: str, device_id: str, format: str):
     pass
 
 
-@router.get("/{username}.{format}", response_model=ORJSONResponse)
+@router.get("/{username}.{format}")
 async def get_user_subscriptions(username: str, format: str):
     """
     Get all subscriptions for a given user.
@@ -39,7 +39,7 @@ async def get_user_subscriptions(username: str, format: str):
     pass
 
 
-@router.put("/{username}/{device_id}.{format}", response_model=ORJSONResponse)
+@router.put("/{username}/{device_id}.{format}")
 async def update_device_subscriptions(username: str, device_id: str, format: str):
     """
     Update the subscriptions for a specific device belonging to a user.
@@ -55,7 +55,7 @@ async def update_device_subscriptions(username: str, device_id: str, format: str
     pass
 
 
-@router.post("/{username}/{device_id}.json", response_model=ORJSONResponse)
+@router.post("/{username}/{device_id}.json")
 async def create_subscription_changes(username: str, device_id: str):
     """
     Create changes to the subscriptions for a specific device.
@@ -70,7 +70,7 @@ async def create_subscription_changes(username: str, device_id: str):
     pass
 
 
-@router.get("/{username}/{device_id}.json", response_model=ORJSONResponse)
+@router.get("/{username}/{device_id}.json")
 async def get_subscription_changes(username: str, device_id: str):
     """
     Get changes to the subscriptions for a specific device.

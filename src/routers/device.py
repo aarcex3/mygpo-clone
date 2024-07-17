@@ -8,22 +8,22 @@ Device Routes
 router = APIRouter(prefix="/devices", tags=["Devices"])
 
 
-@router.post("/{username}/{device_id}.json", response_model=ORJSONResponse)
+@router.post("/{username}/{device_id}.json")
 async def update_device(username: str, device_id: str):
     """
     Update the information of a specific device for a given user.
 
     Args:
-        username (str): The username of the user.
-        device_id (str): The ID of the device to update.
+        - username (str): The username of the user.
+        - device_id (str): The ID of the device to update.
 
     Returns:
-        ORJSONResponse: The result of the update operation.
+        - ORJSONResponse: The result of the update operation.
     """
     pass
 
 
-@router.post("/{username}.json", response_model=ORJSONResponse)
+@router.post("/{username}.json")
 async def user_devices(username: str):
     """
     Retrieve the list of devices for a given user.
@@ -37,7 +37,7 @@ async def user_devices(username: str):
     pass
 
 
-@router.get("/{username}/{device_id}.json", response_model=ORJSONResponse)
+@router.get("/{username}/{device_id}.json")
 async def device_update(username: str, device_id: str):
     """
     Get the update status or information of a specific device for a given user.

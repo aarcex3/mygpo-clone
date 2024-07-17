@@ -4,7 +4,7 @@ from fastapi.responses import ORJSONResponse
 router = APIRouter(prefix="/favorites", tags=["Favorites"])
 
 
-@router.get("/{username}.json", response_model=ORJSONResponse)
+@router.get("/{username}.json")
 async def favorite_episodes(username: str):
     """
     Get the list of favorite episodes for a given user.

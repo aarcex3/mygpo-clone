@@ -8,7 +8,7 @@ Podcasts lists routes
 router = APIRouter(prefix="/lists", tags=["Podcasts lists"])
 
 
-@router.post("/{username}/create.{format}", response_model=ORJSONResponse)
+@router.post("/{username}/create.{format}")
 async def create_podcast_list(title: str, username: str, format: str):
     """
     Create a new podcast list for a given user.
@@ -24,8 +24,8 @@ async def create_podcast_list(title: str, username: str, format: str):
     pass
 
 
-@router.get("/{username}.json", response_model=ORJSONResponse)
-async def user_podcast_list(username: str):
+@router.get("/{username}.json")
+async def user_podcast_lists(username: str):
     """
     Get all podcast lists for a given user.
 
@@ -38,7 +38,7 @@ async def user_podcast_list(username: str):
     pass
 
 
-@router.get("/{username}/lists/{listname}.{format}", response_model=ORJSONResponse)
+@router.get("/{username}/lists/{listname}.{format}")
 async def get_user_podcast_list(listname: str, username: str, format: str):
     """
     Get a specific podcast list for a given user.
@@ -54,7 +54,7 @@ async def get_user_podcast_list(listname: str, username: str, format: str):
     pass
 
 
-@router.put("/{username}/lists/{listname}.{format}", response_model=ORJSONResponse)
+@router.put("/{username}/lists/{listname}.{format}")
 async def update_user_podcast_list(listname: str, username: str, format: str):
     """
     Update a specific podcast list for a given user.
@@ -70,7 +70,7 @@ async def update_user_podcast_list(listname: str, username: str, format: str):
     pass
 
 
-@router.delete("/{username}/lists/{listname}.{format}", response_model=ORJSONResponse)
+@router.delete("/{username}/lists/{listname}.{format}")
 async def delete_user_podcast_list(listname: str, username: str, format: str):
     """
     Delete a specific podcast list for a given user.

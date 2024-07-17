@@ -8,7 +8,7 @@ Directory Routes
 router = APIRouter(tags=["Directory"])
 
 
-@router.get("/tags/{count}.json", response_model=ORJSONResponse)
+@router.get("/tags/{count}.json")
 async def top_tags(count: int):
     """
     Get the top tags based on usage count.
@@ -22,7 +22,7 @@ async def top_tags(count: int):
     pass
 
 
-@router.get("/tags/{tag}/{count}.json", response_model=ORJSONResponse)
+@router.get("/tags/{tag}/{count}.json")
 async def podcasts_tags(tag: str, count: int):
     """
     Get the top podcasts associated with a specific tag.
@@ -37,7 +37,7 @@ async def podcasts_tags(tag: str, count: int):
     pass
 
 
-@router.get("/data/podcast.json", response_model=ORJSONResponse)
+@router.get("/data/podcast.json")
 async def podcast_data(url: str):
     """
     Get data for a specific podcast by its URL.
@@ -51,7 +51,7 @@ async def podcast_data(url: str):
     pass
 
 
-@router.get("/data/episode.json", response_model=ORJSONResponse)
+@router.get("/data/episode.json")
 async def episode_data(podcast_url: str, episode_url: str):
     """
     Get data for a specific episode of a podcast.
@@ -66,7 +66,7 @@ async def episode_data(podcast_url: str, episode_url: str):
     pass
 
 
-@router.get("/toplist/{count}.{format}", response_model=ORJSONResponse)
+@router.get("/toplist/{count}.{format}")
 async def podcasts_toplist(count: int, format: str):
     """
     Get a toplist of podcasts in a specified format.
@@ -81,7 +81,7 @@ async def podcasts_toplist(count: int, format: str):
     pass
 
 
-@router.get("/search.{format}", response_model=ORJSONResponse)
+@router.get("/search.{format}")
 async def podcast_search(query: str, format: str):
     """
     Search for podcasts in a specified format.
