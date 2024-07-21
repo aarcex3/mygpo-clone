@@ -14,6 +14,7 @@ pydantic = "^2.8.2"
 authx = "^1.2.1"
 itsdangerous = "^2.2.0"
 sqlmodel = "^0.0.19"
+bcrypt = "^4.1.3"
 
 
 

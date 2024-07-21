@@ -1,8 +1,9 @@
 """Defintion for the user table"""
 
 from typing import Optional
-from sqlmodel import SQLModel, Field, Relationship
+
 from pydantic import EmailStr
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class User(SQLModel, table=True):
@@ -12,5 +13,5 @@ class User(SQLModel, table=True):
     username: str = Field(index=True, unique=True)
     password: str
     email: EmailStr
-    devices: list["Device"] = Relationship(back_populates="owner")  # type: ignore
-    podcast_lists: list["UserList"] = Relationship(back_populates="owner")  # type: ignore
+    devices: Optional[list["Device"]] = Relationship(back_populates="owner")  # type: ignore
+    podcast_lists: Optional[list["UserList"]] = Relationship(back_populates="owner")  # type: ignore

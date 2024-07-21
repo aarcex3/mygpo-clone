@@ -2,8 +2,11 @@
 Main entry point for the app
 """
 
-from fastapi import FastAPI
 import uvicorn
+from fastapi import FastAPI
+
+from src.database import create_db_and_tables
+from src.dependecies import SECURITY
 from src.routers import (
     authentication,
     device,
@@ -35,7 +38,8 @@ def create_app() -> FastAPI:
     return _app
 
 
-app = create_app()
-
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    app = create_app()
+    SECURITY.handle_errors(app)
+    create_db_and_tables()
+    uvicorn.run("__main__:app", host="0.0.0.0", port=8000)

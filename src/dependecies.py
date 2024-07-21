@@ -5,6 +5,7 @@ App dependecies
 import os
 
 from pydantic_settings import BaseSettings
+from authx import AuthX, AuthXConfig
 
 
 class Settings(BaseSettings):
@@ -15,3 +16,11 @@ class Settings(BaseSettings):
 
 
 SETTINGS = Settings()
+
+
+config = AuthXConfig()
+config.JWT_ALGORITHM = "HS256"
+config.JWT_SECRET_KEY = SETTINGS.SECRET_KEY
+config.JWT_TOKEN_LOCATION = ["headers"]
+
+SECURITY = AuthX(config=config)

@@ -2,7 +2,8 @@
 
 import enum
 from typing import Optional
-from sqlmodel import SQLModel, Field, Relationship, Enum
+
+from sqlmodel import Field, Relationship, SQLModel
 
 from src.models.subscription import Subscription
 from src.models.user import User
@@ -23,9 +24,9 @@ class Device(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True, index=True)
     caption: str = Field(unique=True, index=True)
-    type: Enum[DeviceType]
+    type: DeviceType
     podcasts: list["Podcast"] = Relationship(  # type: ignore
         back_populates="subscribers", link_model=Subscription
     )
     owner_id: Optional[int] = Field(foreign_key="user.id")
-    owner: User = Relationship(back_populates="devices")
+    owner: Optional[User] = Relationship(back_populates="devices")

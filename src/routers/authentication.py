@@ -2,14 +2,45 @@
 Authentication Routes
 """
 
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import HTTPBasicCredentials, HTTPBasic
+from authx import AuthXDependency
+from fastapi import APIRouter, Depends, Form, HTTPException, Response, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from sqlmodel import Session
+
+from src.crud.authentication import create_user, find_user
+from src.database import get_session
+from src.dependecies import SECURITY
+from src.schemas.authentication import RegistrationSchema
+from src.utils.authentication import check_password
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
-@router.post("/{username}/login.json")
-async def login(credentials: HTTPBasicCredentials = Depends(HTTPBasic())):
+@router.post("/register")
+async def register(
+    form: RegistrationSchema = Depends(), session: Session = Depends(get_session)
+):
+    """
+    User registration endpoint.
+
+    This endpoint allows a new user to register by providing a username, password,
+    and email. The registration details are validated and stored in the database.
+
+    Parameters:
+    - form (RegistrationSchema): The registration form data including username, password, and email.
+    - session (Session): The database session dependency.
+
+    Returns:
+    - JSON response indicating the success or failure of the registration attempt.
+    """
+    return await create_user(form=form, session=session)
+
+
+@router.post("/login")
+async def login(
+    credentials: HTTPBasicCredentials = Depends(HTTPBasic()),
+    session: Session = Depends(get_session),
+):
     """
     User login endpoint.
 
@@ -20,23 +51,37 @@ async def login(credentials: HTTPBasicCredentials = Depends(HTTPBasic())):
     - credentials: HTTPBasicCredentials: The username and password provided by the user.
 
     Returns:
-    - JSON response indicating success or failure of login attempt.
+    - Response object with the access token or HTTPException if the credentials aren't valid
     """
-    pass
+    user = await find_user(credentials.username, session)
+    if user and check_password(credentials.password, user.password):
+        token = SECURITY.create_access_token(uid=str(user.id))
+        headers = {"Authorization": f"Bearer {token}"}
+        return Response(
+            status_code=status.HTTP_200_OK,
+            headers=headers,
+            content="Succesfully logged in",
+        )
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad credentials"
+    )
 
 
-@router.post("/{username}/logout.json")
-async def logout(username: str):
+@router.post("/logout", dependencies=[Depends(SECURITY.access_token_required)])
+async def logout(
+    deps: AuthXDependency = Depends(SECURITY.get_dependency),
+):
     """
     User logout endpoint.
 
-    This endpoint allows a user to log out. No authentication is required to perform
-    a logout action.
+    This endpoint allows a user to log out.
 
     Parameters:
-    - username: str: The username of the user who wants to log out.
+    - access_token (str): The authorization token set in the login endpoint
 
     Returns:
     - JSON response indicating success or failure of logout attempt.
     """
-    pass
+
+    deps.unset_access_cookies()
+    return {"message": "Logout successful"}
