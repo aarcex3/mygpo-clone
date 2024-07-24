@@ -1,7 +1,7 @@
 # Todos
 
 ## Endpoints
-
+Endpoints to implement
 ### Auth
 
 - [x] Register
@@ -10,40 +10,40 @@
 
 ### Directory
 
-- [] Top tags
-- [] Podcats tags
-- [] Podcast data
-- [] Episode data
-- [] Podcasts toplists
-- [] Podcasts search
+- [ ] Top tags
+- [ ] Podcats tags
+- [ ] Podcast data
+- [ ] Episode data
+- [ ] Podcasts toplists
+- [ ] Podcasts search
 
 ### Device
 
 - [x] Device info
 - [x] User devices
-- [] Device update
+- [ ] Device update
 
 ### Device_sync
 
-- [] Sync status
-- [] Synchronize
+- [ ] Sync status
+- [ ] Synchronize
 
 ### Favorites
 
-- [] Favorites episodes
+- [ ] Favorites episodes
 
 ### Lists
 
-- [] Create podcast list
-- [] User podcast lists
-- [] User podcast list
-- [] Update user podcast list
-- [] Delete user podcast list
+- [ ] Create podcast list
+- [ ] User podcast lists
+- [ ] User podcast list
+- [ ] Update user podcast list
+- [ ] Delete user podcast list
 
 ### Subscriptions
 
-- [] Get device subscriptions
-- [] Get user subscriptions
-- [] Update device subscriptions
-- [] Create subscription changes
-- [] Get subscription changes
+- [ ] Get device subscriptions
+- [ ] Get user subscriptions
+- [ ] Update device subscriptions
+- [ ] Create subscription changes
+- [ ] Get subscription changes
