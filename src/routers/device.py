@@ -1,15 +1,28 @@
-from fastapi import APIRouter
-from fastapi.responses import ORJSONResponse
+"""
+Devices routes 
+"""
 
-"""
-Device Routes
-"""
+from authx import TokenPayload
+from fastapi import APIRouter, Depends
+from sqlmodel import Session
+
+from src.crud.device import get_user_devices, update_device_info
+from src.database import get_session
+from src.dependecies import SECURITY
+from src.schemas.device import UpdateDeviceSchema
 
 router = APIRouter(prefix="/devices", tags=["Devices"])
 
 
-@router.post("/{username}/{device_id}.json")
-async def update_device(username: str, device_id: str):
+@router.post(
+    "/{username}/{device_id}", dependencies=[Depends(SECURITY.access_token_required)]
+)
+async def device_info(
+    device_id: str,
+    data: UpdateDeviceSchema,
+    payload: TokenPayload = Depends(SECURITY.access_token_required),
+    session: Session = Depends(get_session),
+):
     """
     Update the information of a specific device for a given user.
 
@@ -18,13 +31,18 @@ async def update_device(username: str, device_id: str):
         - device_id (str): The ID of the device to update.
 
     Returns:
-        - ORJSONResponse: The result of the update operation.
+        - JSON: The result of the update operation.
     """
-    pass
+    return await update_device_info(
+        device_id=device_id, data=data, owner_id=payload.sub, session=session
+    )
 
 
-@router.post("/{username}.json")
-async def user_devices(username: str):
+@router.post("/{username}", dependencies=[Depends(SECURITY.access_token_required)])
+async def user_devices(
+    payload: TokenPayload = Depends(SECURITY.access_token_required),
+    session: Session = Depends(get_session),
+):
     """
     Retrieve the list of devices for a given user.
 
@@ -32,12 +50,12 @@ async def user_devices(username: str):
         username (str): The username of the user.
 
     Returns:
-        ORJSONResponse: The list of devices associated with the user.
+        The list of devices associated with the user.
     """
-    pass
+    return await get_user_devices(user_id=payload.sub, session=session)
 
 
-@router.get("/{username}/{device_id}.json")
+@router.get("/{username}/{device_id}")
 async def device_update(username: str, device_id: str):
     """
     Get the update status or information of a specific device for a given user.

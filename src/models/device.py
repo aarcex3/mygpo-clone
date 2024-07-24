@@ -1,6 +1,7 @@
 """Defintion for the device table """
 
 import enum
+import uuid
 from typing import Optional
 
 from sqlmodel import Field, Relationship, SQLModel
@@ -13,7 +14,6 @@ class DeviceType(enum.Enum):
     """Type of devices"""
 
     DESKTOP = "DESKTOP"
-    LAPTOP = "LAPTOP"
     MOBILE = "MOBILE"
     SERVER = "SERVER"
     OTHER = "OTHER"
@@ -22,11 +22,11 @@ class DeviceType(enum.Enum):
 class Device(SQLModel, table=True):
     """Device in DB model"""
 
-    id: Optional[int] = Field(default=None, primary_key=True, index=True)
+    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid1, primary_key=True)
     caption: str = Field(unique=True, index=True)
-    type: DeviceType
-    podcasts: list["Podcast"] = Relationship(  # type: ignore
+    device_type: DeviceType
+    podcasts: Optional[list["Podcast"]] = Relationship(  # type: ignore
         back_populates="subscribers", link_model=Subscription
     )
-    owner_id: Optional[int] = Field(foreign_key="user.id")
-    owner: Optional[User] = Relationship(back_populates="devices")
+    owner_id: uuid.UUID = Field(foreign_key="user.id")
+    owner: User = Relationship(back_populates="devices")

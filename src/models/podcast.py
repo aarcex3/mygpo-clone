@@ -1,17 +1,19 @@
 """Defintion for the podcast table"""
 
+import uuid
 from typing import Optional
-from sqlmodel import SQLModel, Field, Relationship
+
+from sqlmodel import Field, Relationship, SQLModel
 
 from src.models.podcastlist import PodcastList
-from src.models.subscription import Subscription
 from src.models.podcasttag import PodcastTag
+from src.models.subscription import Subscription
 
 
 class Podcast(SQLModel, table=True):
     """Podcast in DB model"""
 
-    id: Optional[int] = Field(default=None, primary_key=True, index=True)
+    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid1, primary_key=True)
     name: str = Field(unique=True, index=True)
     description: str
     website: str

@@ -3,11 +3,11 @@ Authentication Routes
 """
 
 from authx import AuthXDependency
-from fastapi import APIRouter, Depends, Form, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlmodel import Session
 
-from src.crud.authentication import create_user, find_user
+from src.crud.authentication import authenticate_user, create_user, find_user
 from src.database import get_session
 from src.dependecies import SECURITY
 from src.schemas.authentication import RegistrationSchema
@@ -54,17 +54,7 @@ async def login(
     - Response object with the access token or HTTPException if the credentials aren't valid
     """
     user = await find_user(credentials.username, session)
-    if user and check_password(credentials.password, user.password):
-        token = SECURITY.create_access_token(uid=str(user.id))
-        headers = {"Authorization": f"Bearer {token}"}
-        return Response(
-            status_code=status.HTTP_200_OK,
-            headers=headers,
-            content="Succesfully logged in",
-        )
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad credentials"
-    )
+    return authenticate_user(user, credentials.password)
 
 
 @router.post("/logout", dependencies=[Depends(SECURITY.access_token_required)])
