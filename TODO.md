@@ -21,24 +21,24 @@
 
 - [x] Device info
 - [x] User devices
-- [] Device update
+- [ ] Device update
 
 ### Device_sync
 
-- [] Sync status
-- [] Synchronize
+- [ ] Sync status
+- [ ] Synchronize
 
 ### Favorites
 
-- [] Favorites episodes
+- [ ] Favorites episodes
 
 ### Lists
 
-- [] Create podcast list
-- [] User podcast lists
-- [] User podcast list
-- [] Update user podcast list
-- [] Delete user podcast list
+- [ ] Create podcast list
+- [ ] User podcast lists
+- [ ] User podcast list
+- [ ] Update user podcast list
+- [ ] Delete user podcast list
 
 ### Subscriptions
 
