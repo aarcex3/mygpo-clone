@@ -8,7 +8,7 @@ Device Synchronization routes
 router = APIRouter(prefix="/sync-devices", tags=["Synchronization"])
 
 
-@router.get("/{username}.json")
+@router.get("/{username}")
 async def sync_status(username: str):
     """
     Get the synchronization status of devices for a given user.
@@ -22,7 +22,7 @@ async def sync_status(username: str):
     pass
 
 
-@router.post("/{username}.json")
+@router.post("/{username}")
 async def synchronize(username: str):
     """
     Synchronize devices for a given user.

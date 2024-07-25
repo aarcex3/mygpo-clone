@@ -3,15 +3,14 @@ Authentication Routes
 """
 
 from authx import AuthXDependency
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlmodel import Session
 
-from src.crud.authentication import authenticate_user, create_user, find_user
 from src.database import get_session
 from src.dependecies import SECURITY
 from src.schemas.authentication import RegistrationSchema
-from src.utils.authentication import check_password
+from src.services.authentication import authenticate_user, create_user, find_user
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 

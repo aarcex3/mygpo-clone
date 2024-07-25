@@ -10,12 +10,12 @@
 
 ### Directory
 
-- [] Top tags
-- [] Podcats tags
-- [] Podcast data
-- [] Episode data
+- [x] Top tags
+- [x] Podcats tags
+- [x] Podcast data
+- [x] Episode data
 - [] Podcasts toplists
-- [] Podcasts search
+- [x] Podcasts search
 
 ### Device
 
@@ -47,3 +47,7 @@
 - [] Update device subscriptions
 - [] Create subscription changes
 - [] Get subscription changes
+
+## Tests
+
+Implement test for the endpoints

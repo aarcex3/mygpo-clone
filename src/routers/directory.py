@@ -1,15 +1,26 @@
-from fastapi import APIRouter
-from fastapi.responses import ORJSONResponse
-
 """
 Directory Routes
 """
 
+from xml.etree.ElementTree import Element, ElementTree, SubElement, tostring
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
+from sqlmodel import Session
+
+from src.database import get_session
+from src.services.directory import (
+    get_episode_data,
+    get_podcast_data,
+    get_podcast_tags,
+    get_podcasts_by_query,
+    get_top_tags,
+)
+
 router = APIRouter(tags=["Directory"])
 
 
-@router.get("/tags/{count}.json")
-async def top_tags(count: int):
+@router.get("/tags/{count}")
+async def top_tags(count: int = 3, session: Session = Depends(get_session)):
     """
     Get the top tags based on usage count.
 
@@ -17,13 +28,13 @@ async def top_tags(count: int):
         count (int): The number of top tags to retrieve.
 
     Returns:
-        ORJSONResponse: A list of the top tags.
+        A list of the top tags.
     """
-    pass
+    return await get_top_tags(count=count, session=session)
 
 
-@router.get("/tags/{tag}/{count}.json")
-async def podcasts_tags(tag: str, count: int):
+@router.get("/tags/{code}/{count}")
+async def podcasts_tags(code: str, count: int, session: Session = Depends(get_session)):
     """
     Get the top podcasts associated with a specific tag.
 
@@ -32,13 +43,13 @@ async def podcasts_tags(tag: str, count: int):
         count (int): The number of podcasts to retrieve.
 
     Returns:
-        ORJSONResponse: A list of podcasts associated with the tag.
+        A list of podcasts associated with the tag.
     """
-    pass
+    return await get_podcast_tags(code=code, count=count, session=session)
 
 
-@router.get("/data/podcast.json")
-async def podcast_data(url: str):
+@router.get("/data/podcast")
+async def podcast_data(url: str, session: Session = Depends(get_session)):
     """
     Get data for a specific podcast by its URL.
 
@@ -46,24 +57,23 @@ async def podcast_data(url: str):
         url (str): The URL of the podcast.
 
     Returns:
-        ORJSONResponse: Data of the specified podcast.
+        Data of the specified podcast.
     """
-    pass
+    return await get_podcast_data(url=url, session=session)
 
 
-@router.get("/data/episode.json")
-async def episode_data(podcast_url: str, episode_url: str):
+@router.get("/data/episode")
+async def episode_data(episode_url: str, session: Session = Depends(get_session)):
     """
     Get data for a specific episode of a podcast.
 
     Args:
-        podcast_url (str): The URL of the podcast.
         episode_url (str): The URL of the episode.
 
     Returns:
-        ORJSONResponse: Data of the specified episode.
+        Data of the specified episode.
     """
-    pass
+    return await get_episode_data(episode_url=episode_url, session=session)
 
 
 @router.get("/toplist/{count}.{format}")
@@ -76,21 +86,47 @@ async def podcasts_toplist(count: int, format: str):
         format (str): The format of the toplist (e.g., JSON).
 
     Returns:
-        ORJSONResponse: A toplist of podcasts.
+        A toplist of podcasts.
     """
     pass
 
 
-@router.get("/search.{format}")
-async def podcast_search(query: str, format: str):
+@router.get("/search.{search_format}")
+async def podcast_search(
+    query: str, search_format: str, session: Session = Depends(get_session)
+):
     """
     Search for podcasts in a specified format.
 
     Args:
         query (str): The search query
-        format (str): The format of the search results (e.g., JSON).
+        search_format (str): The format of the search results (e.g., JSON).
 
     Returns:
-        ORJSONResponse: The search results for podcasts.
+        The search results for podcasts.
     """
-    pass
+    podcasts = await get_podcasts_by_query(query, session)
+    match search_format:
+        case "opml":
+            root = Element("opml", version="2.0")
+            head = SubElement(root, "head")
+            title = SubElement(head, "title")
+            title.text = "Podcast Search Results"
+            body = SubElement(root, "body")
+            for podcast in podcasts:
+                body.append(podcast.to_opml())
+            opml_content = tostring(root, encoding="utf-8").decode("utf-8")
+            return Response(content=opml_content, media_type="text/xml")
+        case "xml":
+            root = Element("podcasts")
+            for podcast in podcasts:
+                root.append(podcast.to_xml())
+            xml_content = tostring(root, encoding="utf-8").decode("utf-8")
+            return Response(content=xml_content, media_type="text/xml")
+        case "json":
+            return podcasts
+        case _:
+            raise HTTPException(
+                detail="Format not supported",
+                status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            )

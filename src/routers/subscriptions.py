@@ -19,7 +19,7 @@ async def get_device_subscriptions(username: str, device_id: str, format: str):
         format (str): The format for the response (e.g., JSON).
 
     Returns:
-        ORJSONResponse: A list of subscriptions for the specified device.
+        A list of subscriptions for the specified device.
     """
     pass
 
@@ -34,7 +34,7 @@ async def get_user_subscriptions(username: str, format: str):
         format (str): The format for the response (e.g., JSON).
 
     Returns:
-        ORJSONResponse: A list of subscriptions for the user.
+        A list of subscriptions for the user.
     """
     pass
 
@@ -50,12 +50,12 @@ async def update_device_subscriptions(username: str, device_id: str, format: str
         format (str): The format for the response (e.g., JSON).
 
     Returns:
-        ORJSONResponse: The updated list of subscriptions for the device.
+        The updated list of subscriptions for the device.
     """
     pass
 
 
-@router.post("/{username}/{device_id}.json")
+@router.post("/{username}/{device_id}")
 async def create_subscription_changes(username: str, device_id: str):
     """
     Create changes to the subscriptions for a specific device.
@@ -65,12 +65,12 @@ async def create_subscription_changes(username: str, device_id: str):
         device_id (str): The ID of the device.
 
     Returns:
-        ORJSONResponse: Confirmation of the subscription changes.
+        Confirmation of the subscription changes.
     """
     pass
 
 
-@router.get("/{username}/{device_id}.json")
+@router.get("/{username}/{device_id}")
 async def get_subscription_changes(username: str, device_id: str):
     """
     Get changes to the subscriptions for a specific device.
@@ -80,6 +80,6 @@ async def get_subscription_changes(username: str, device_id: str):
         device_id (str): The ID of the device.
 
     Returns:
-        ORJSONResponse: The subscription changes for the device.
+        The subscription changes for the device.
     """
     pass

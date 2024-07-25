@@ -24,7 +24,7 @@ async def create_podcast_list(title: str, username: str, format: str):
     pass
 
 
-@router.get("/{username}.json")
+@router.get("/{username}")
 async def user_podcast_lists(username: str):
     """
     Get all podcast lists for a given user.
@@ -81,6 +81,6 @@ async def delete_user_podcast_list(listname: str, username: str, format: str):
         format (str): The format for the response (e.g., JSON).
 
     Returns:
-        ORJSONResponse: Confirmation of the deletion.
+        Confirmation of the deletion.
     """
     pass

@@ -6,10 +6,10 @@ from authx import TokenPayload
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
-from src.crud.device import get_user_devices, update_device_info
 from src.database import get_session
 from src.dependecies import SECURITY
 from src.schemas.device import UpdateDeviceSchema
+from src.services.device import get_user_devices, update_device_info
 
 router = APIRouter(prefix="/devices", tags=["Devices"])
 
@@ -31,7 +31,7 @@ async def device_info(
         - device_id (str): The ID of the device to update.
 
     Returns:
-        - JSON: The result of the update operation.
+        - The result of the update operation.
     """
     return await update_device_info(
         device_id=device_id, data=data, owner_id=payload.sub, session=session
@@ -65,6 +65,6 @@ async def device_update(username: str, device_id: str):
         device_id (str): The ID of the device to get the update status for.
 
     Returns:
-        ORJSONResponse: The update status or information of the device.
+        The update status or information of the device.
     """
     pass
