@@ -19,6 +19,7 @@ class Podcast(SQLModel, table=True):
     website: str
     xml_url: str
     author: str
+    subscribers_count: int
     subscribers: list["Device"] = Relationship(  # type: ignore
         back_populates="podcasts", link_model=Subscription
     )

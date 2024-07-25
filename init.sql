@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS Podcast (
     description TEXT NOT NULL,
     website TEXT NOT NULL,
     xml_url TEXT NOT NULL,
-    author TEXT NOT NULL
+    author TEXT NOT NULL,
+    subscribers_count INTEGER NOT NULL
 );
 -- Create the PodcastList table
 CREATE TABLE IF NOT EXISTS PodcastList (
@@ -113,14 +114,23 @@ VALUES (
         '1d9f1c11-9e34-11e9-b475-0800273b35d5'
     );
 -- Insert fake data into Podcast table
-INSERT INTO Podcast (id, name, description, website, xml_url, author)
+INSERT INTO Podcast (
+        id,
+        name,
+        description,
+        website,
+        xml_url,
+        author,
+        subscribers_count
+    )
 VALUES (
         '3d9f1c10-9e34-11e9-b475-0800273b35d5',
         'Tech Talk',
         'A podcast about tech',
         'http://techtalk.com',
         'http://techtalk.com/rss',
-        'Tech Talk Team'
+        'Tech Talk Team',
+        12340
     ),
     (
         '3d9f1c11-9e34-11e9-b475-0800273b35d5',
@@ -128,7 +138,8 @@ VALUES (
         'A podcast about history',
         'http://historybuffs.com',
         'http://historybuffs.com/rss',
-        'History Buffs Team'
+        'History Buffs Team',
+        34
     ),
     (
         '331bda0c-49e0-11ef-9454-0242ac120002',
@@ -136,7 +147,8 @@ VALUES (
         'A podcast about history of the countries',
         'http://historyland.com',
         'http://historyland.com/rss',
-        'History Land Team'
+        'History Land Team',
+        1234
     );
 -- Insert fake data into Episode table
 INSERT INTO Episode (

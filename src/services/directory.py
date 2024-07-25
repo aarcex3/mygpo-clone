@@ -57,7 +57,7 @@ async def get_podcast_data(url: str, session: Session) -> Podcast:
 
 
 async def get_episode_data(episode_url: str, session: Session) -> Episode:
-    """Retrieve episdod data"""
+    """Retrieve episdode data"""
     episode = session.exec(
         select(Episode).where(Episode.audio_url == episode_url)
     ).first()
@@ -75,5 +75,15 @@ async def get_podcasts_by_query(query: str, session: Session) -> list[PodcastOut
         select(Podcast).filter(
             or_(Podcast.author.contains(query), Podcast.description.contains(query))
         )
+    ).all()
+    return [PodcastOut(**podcast.model_dump(exclude={"id"})) for podcast in podcasts]
+
+
+async def get_top_podcasts(count: int, session: Session) -> list[Podcast]:
+    """
+    Get the top podcasts
+    """
+    podcasts = session.exec(
+        select(Podcast).order_by(desc(Podcast.subscribers_count)).limit(count)
     ).all()
     return [PodcastOut(**podcast.model_dump(exclude={"id"})) for podcast in podcasts]

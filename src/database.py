@@ -8,6 +8,9 @@ engine = create_engine(f"sqlite:///{SETTINGS.DB_URL}", echo=True)
 
 
 def create_db_and_tables():
+    """
+    Init the db engine
+    """
     SQLModel.metadata.create_all(engine)
 
 

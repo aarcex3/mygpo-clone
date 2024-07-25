@@ -2,9 +2,7 @@
 Directory Routes
 """
 
-from xml.etree.ElementTree import Element, ElementTree, SubElement, tostring
-
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
 from src.database import get_session
@@ -13,8 +11,10 @@ from src.services.directory import (
     get_podcast_data,
     get_podcast_tags,
     get_podcasts_by_query,
+    get_top_podcasts,
     get_top_tags,
 )
+from src.utils.responses import format_podcasts_response
 
 router = APIRouter(tags=["Directory"])
 
@@ -65,7 +65,7 @@ async def podcast_data(url: str, session: Session = Depends(get_session)):
 @router.get("/data/episode")
 async def episode_data(episode_url: str, session: Session = Depends(get_session)):
     """
-    Get data for a specific episode of a podcast.
+    Get data for a specific episode of a podcast by its url.
 
     Args:
         episode_url (str): The URL of the episode.
@@ -76,19 +76,22 @@ async def episode_data(episode_url: str, session: Session = Depends(get_session)
     return await get_episode_data(episode_url=episode_url, session=session)
 
 
-@router.get("/toplist/{count}.{format}")
-async def podcasts_toplist(count: int, format: str):
+@router.get("/top/{count}.{search_format}")
+async def top_podcasts(
+    count: int, search_format: str, session: Session = Depends(get_session)
+):
     """
     Get a toplist of podcasts in a specified format.
 
     Args:
         count (int): The number of podcasts to retrieve.
-        format (str): The format of the toplist (e.g., JSON).
+        search_format (str): The format of the toplist (e.g., XML, JSON).
 
     Returns:
         A toplist of podcasts.
     """
-    pass
+    podcasts = await get_top_podcasts(count, session)
+    return format_podcasts_response(podcasts, search_format)
 
 
 @router.get("/search.{search_format}")
@@ -106,27 +109,4 @@ async def podcast_search(
         The search results for podcasts.
     """
     podcasts = await get_podcasts_by_query(query, session)
-    match search_format:
-        case "opml":
-            root = Element("opml", version="2.0")
-            head = SubElement(root, "head")
-            title = SubElement(head, "title")
-            title.text = "Podcast Search Results"
-            body = SubElement(root, "body")
-            for podcast in podcasts:
-                body.append(podcast.to_opml())
-            opml_content = tostring(root, encoding="utf-8").decode("utf-8")
-            return Response(content=opml_content, media_type="text/xml")
-        case "xml":
-            root = Element("podcasts")
-            for podcast in podcasts:
-                root.append(podcast.to_xml())
-            xml_content = tostring(root, encoding="utf-8").decode("utf-8")
-            return Response(content=xml_content, media_type="text/xml")
-        case "json":
-            return podcasts
-        case _:
-            raise HTTPException(
-                detail="Format not supported",
-                status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            )
+    return format_podcasts_response(podcasts, search_format)

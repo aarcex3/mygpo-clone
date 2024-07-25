@@ -14,7 +14,7 @@
 - [x] Podcats tags
 - [x] Podcast data
 - [x] Episode data
-- [] Podcasts toplists
+- [x] Podcasts toplists
 - [x] Podcasts search
 
 ### Device

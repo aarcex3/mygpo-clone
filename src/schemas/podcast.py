@@ -2,7 +2,7 @@
 Podcasts schemas
 """
 
-from xml.etree.ElementTree import Element, SubElement, tostring
+from xml.etree.ElementTree import Element, SubElement
 
 from pydantic import BaseModel
 
@@ -15,6 +15,7 @@ class PodcastOut(BaseModel):
     website: str
     xml_url: str
     author: str
+    subscribers_count: int
 
     def to_opml(self) -> str:
         """Convert Podcast to OPML outline element"""
