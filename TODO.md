@@ -42,10 +42,10 @@
 
 ### Subscriptions
 
-- [] Get device subscriptions
-- [] Get user subscriptions
+- [x] Get device subscriptions
+- [x] Get user subscriptions
 - [] Update device subscriptions
-- [] Create subscription changes
+- [] Create subscription changes **HOW**?
 - [] Get subscription changes
 
 ## Tests

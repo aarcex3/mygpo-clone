@@ -22,11 +22,11 @@ class DeviceType(enum.Enum):
 class Device(SQLModel, table=True):
     """Device in DB model"""
 
-    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid1, primary_key=True)
+    id: Optional[int] = Field(default=None, index=True, primary_key=True)
     caption: str = Field(unique=True, index=True)
     device_type: DeviceType
     podcasts: Optional[list["Podcast"]] = Relationship(  # type: ignore
         back_populates="subscribers", link_model=Subscription
     )
-    owner_id: uuid.UUID = Field(foreign_key="user.id")
+    owner_id: int = Field(foreign_key="user.id")
     owner: User = Relationship(back_populates="devices")

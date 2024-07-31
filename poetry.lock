@@ -950,6 +950,17 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "podcastparser"
+version = "0.6.10"
+description = "Simplified, fast RSS parser"
+optional = false
+python-versions = "*"
+files = [
+    {file = "podcastparser-0.6.10-py2.py3-none-any.whl", hash = "sha256:afbeb2eda5a93e2e0e2125a3580a7bae064d6bf3233e0d898525eee54dac5ded"},
+    {file = "podcastparser-0.6.10.tar.gz", hash = "sha256:2b9acb60ad46cff5230c0a3609d37e934674644bfcd5d13b18c423917e9f13d7"},
+]
+
+[[package]]
 name = "pyasn1"
 version = "0.6.0"
 description = "Pure-Python implementation of ASN.1 types and DER/BER/CER codecs (X.208)"
@@ -1986,4 +1997,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "f742453e7fc0578569f4a1a62af7e37457a46c79d5372ca57997ae88a8457eb2"
+content-hash = "b62eef186519ce8ac9299a5d502bd8035749c0079eec06be0ffb7bd74c01be7d"

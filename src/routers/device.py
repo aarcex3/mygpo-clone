@@ -2,6 +2,8 @@
 Devices routes 
 """
 
+from uuid import UUID
+
 from authx import TokenPayload
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
@@ -18,7 +20,7 @@ router = APIRouter(prefix="/devices", tags=["Devices"])
     "/{username}/{device_id}", dependencies=[Depends(SECURITY.access_token_required)]
 )
 async def device_info(
-    device_id: str,
+    device_id: int,
     data: UpdateDeviceSchema,
     payload: TokenPayload = Depends(SECURITY.access_token_required),
     session: Session = Depends(get_session),
@@ -34,7 +36,10 @@ async def device_info(
         - The result of the update operation.
     """
     return await update_device_info(
-        device_id=device_id, data=data, owner_id=payload.sub, session=session
+        device_id=device_id,
+        data=data,
+        owner_id=payload.sub,
+        session=session,
     )
 
 
@@ -52,7 +57,7 @@ async def user_devices(
     Returns:
         The list of devices associated with the user.
     """
-    return await get_user_devices(user_id=payload.sub, session=session)
+    return await get_user_devices(user_id=int(payload.sub), session=session)
 
 
 @router.get("/{username}/{device_id}")

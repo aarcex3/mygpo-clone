@@ -10,7 +10,7 @@ from sqlmodel import Field, Relationship, SQLModel
 class User(SQLModel, table=True):
     """User in DB model"""
 
-    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid1, primary_key=True)
+    id: Optional[int] = Field(default=None, index=True, primary_key=True)
     username: str = Field(index=True, unique=True)
     password: str
     email: EmailStr

@@ -11,7 +11,7 @@ from src.models.podcasttag import PodcastTag
 class Tag(SQLModel, table=True):
     """Tag in DB model"""
 
-    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid1, primary_key=True)
+    id: Optional[int] = Field(default=None, index=True, primary_key=True)
     name: str = Field(unique=True)
     code: str = Field(unique=True, index=True)
     usage: int

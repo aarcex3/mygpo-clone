@@ -2,6 +2,8 @@
 Utilities and crud methods for Device endpoint
 """
 
+from uuid import UUID
+
 from fastapi import HTTPException, Response, status
 from sqlmodel import Session, select
 
@@ -9,7 +11,7 @@ from src.models.device import Device
 from src.schemas.device import UpdateDeviceSchema
 
 
-async def get_user_devices(user_id: str, session: Session) -> list[Device]:
+async def get_user_devices(user_id: int, session: Session) -> list[Device]:
     """
     Get all user devices
     """
@@ -18,7 +20,7 @@ async def get_user_devices(user_id: str, session: Session) -> list[Device]:
 
 
 async def update_device_info(
-    device_id: str, data: UpdateDeviceSchema, owner_id: str, session: Session
+    device_id: int, data: UpdateDeviceSchema, owner_id: int, session: Session
 ):
     """
     Update device info (caption, type)
