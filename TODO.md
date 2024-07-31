@@ -34,11 +34,11 @@
 
 ### Lists
 
-- [ ] Create podcast list
-- [ ] User podcast lists
-- [ ] User podcast list
-- [ ] Update user podcast list
-- [ ] Delete user podcast list
+- [x] Create podcast list
+- [x] User podcast lists
+- [x] User podcast list
+- [x] Update user podcast list
+- [x] Delete user podcast list
 
 ### Subscriptions
 
@@ -51,3 +51,9 @@
 ## Tests
 
 Implement test for the endpoints
+
+### Auth
+
+- [x] Test Registration
+- [x] Test Login
+- [x] Test Logout

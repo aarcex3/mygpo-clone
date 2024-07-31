@@ -1,5 +1,18 @@
-from fastapi import APIRouter
-from fastapi.responses import ORJSONResponse
+from authx import TokenPayload
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlmodel import Session
+
+from src.database import get_session
+from src.dependecies import SECURITY
+from src.schemas.lists import CreateList, ListOut, UpdateList
+from src.services.lists import (
+    create_podcasts_list,
+    delete_user_list,
+    get_user_list,
+    get_user_lists,
+    update_user_list,
+)
+from src.utils.responses import format_query_response
 
 """
 Podcasts lists routes
@@ -8,24 +21,35 @@ Podcasts lists routes
 router = APIRouter(prefix="/lists", tags=["Podcasts lists"])
 
 
-@router.post("/{username}/create.{format}")
-async def create_podcast_list(title: str, username: str, format: str):
+@router.post(
+    "/{username}/create", dependencies=[Depends(SECURITY.access_token_required)]
+)
+async def podcast_list(
+    data: CreateList,
+    username: str,
+    payload: TokenPayload = Depends(SECURITY.access_token_required),
+    session: Session = Depends(get_session),
+):
     """
     Create a new podcast list for a given user.
 
     Args:
         title (str): The title of the podcast list to be created.
         username (str): The username of the user creating the list.
-        format (str): The format for the response (e.g., JSON).
 
     Returns:
-        ORJSONResponse: The details of the created podcast list.
+        Message confirming the creation of the list
     """
-    pass
+    return await create_podcasts_list(
+        title=data.title, username=username, owner_id=int(payload.sub), session=session
+    )
 
 
-@router.get("/{username}")
-async def user_podcast_lists(username: str):
+@router.get("/{username}", dependencies=[Depends(SECURITY.access_token_required)])
+async def user_lists(
+    payload: TokenPayload = Depends(SECURITY.access_token_required),
+    session: Session = Depends(get_session),
+):
     """
     Get all podcast lists for a given user.
 
@@ -33,13 +57,22 @@ async def user_podcast_lists(username: str):
         username (str): The username of the user whose podcast lists are to be retrieved.
 
     Returns:
-        ORJSONResponse: A list of the user's podcast lists.
+        list[UserList]
     """
-    pass
+    return await get_user_lists(user_id=int(payload.sub), session=session)
 
 
-@router.get("/{username}/lists/{listname}.{format}")
-async def get_user_podcast_list(listname: str, username: str, format: str):
+@router.get(
+    "/{username}/lists/{listname}.{search_format}",
+    dependencies=[Depends(SECURITY.access_token_required)],
+)
+async def user_list(
+    listname: str,
+    username: str,
+    search_format: str,
+    payload: TokenPayload = Depends(SECURITY.access_token_required),
+    session: Session = Depends(get_session),
+):
     """
     Get a specific podcast list for a given user.
 
@@ -49,13 +82,36 @@ async def get_user_podcast_list(listname: str, username: str, format: str):
         format (str): The format for the response (e.g., JSON).
 
     Returns:
-        ORJSONResponse: The specified podcast list.
+        list[ListOut]
     """
-    pass
+    user_list: ListOut = await get_user_list(
+        listname=listname, user_id=int(payload.sub), session=session
+    )
+    match search_format:
+        case "xml":
+            return user_list.to_xml()
+        case "opml":
+            return user_list.to_opml()
+        case "json":
+            return user_list
+        case _:
+            raise HTTPException(
+                detail="Format not supported",
+                status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            )
 
 
-@router.put("/{username}/lists/{listname}.{format}")
-async def update_user_podcast_list(listname: str, username: str, format: str):
+@router.put(
+    "/{username}/lists/{listname}",
+    dependencies=[Depends(SECURITY.access_token_required)],
+)
+async def user_list(
+    listname: str,
+    username: str,
+    new_list: UpdateList,
+    payload: TokenPayload = Depends(SECURITY.access_token_required),
+    session: Session = Depends(get_session),
+):
     """
     Update a specific podcast list for a given user.
 
@@ -67,11 +123,25 @@ async def update_user_podcast_list(listname: str, username: str, format: str):
     Returns:
         ORJSONResponse: The updated podcast list.
     """
-    pass
+    return await update_user_list(
+        listname=listname,
+        username=username,
+        user_id=int(payload.sub),
+        new_list=new_list,
+        session=session,
+    )
 
 
-@router.delete("/{username}/lists/{listname}.{format}")
-async def delete_user_podcast_list(listname: str, username: str, format: str):
+@router.delete(
+    "/{username}/lists/{listname}",
+    dependencies=[Depends(SECURITY.access_token_required)],
+)
+async def user_list(
+    listname: str,
+    username: str,
+    payload: TokenPayload = Depends(SECURITY.access_token_required),
+    session: Session = Depends(get_session),
+):
     """
     Delete a specific podcast list for a given user.
 
@@ -83,4 +153,6 @@ async def delete_user_podcast_list(listname: str, username: str, format: str):
     Returns:
         Confirmation of the deletion.
     """
-    pass
+    return await delete_user_list(
+        listname=listname, user_id=int(payload.sub), session=session
+    )

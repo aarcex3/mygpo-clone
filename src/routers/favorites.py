@@ -1,10 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlmodel import Session
+
+from src.database import get_session
 
 router = APIRouter(prefix="/favorites", tags=["Favorites"])
 
 
 @router.get("/{username}")
-async def favorite_episodes(username: str):
+async def favorite_episodes(username: str,session: Session = Depends(get_session)):
     """
     Get the list of favorite episodes for a given user.
 

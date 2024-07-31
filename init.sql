@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS Tag (
 -- Create the UserList table
 CREATE TABLE IF NOT EXISTS UserList (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    name TEXT NOT NULL UNIQUE,
     title TEXT NOT NULL,
     web TEXT NOT NULL,
     owner_id INTEGER,
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS User (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
-    email TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
     UNIQUE (username)
 );
 
@@ -142,8 +142,8 @@ VALUES
 -- Insert fake data into UserList table
 INSERT INTO UserList (name, title, web, owner_id)
 VALUES
-    ('User1 Favorites', 'Favorites', 'http://favorites.com', 1),
-    ('User2 Must Listen', 'Must Listen', 'http://mustlisten.com', 2);
+    ('favorites', 'Favorites', 'http://favorites.com', 1),
+    ('must-listen', 'Must Listen', 'http://mustlisten.com', 2);
 
 -- Insert fake data into PodcastList table
 INSERT INTO PodcastList (user_list_id, podcast_id)

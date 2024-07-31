@@ -3,7 +3,7 @@ Authentication Routes
 """
 
 from authx import AuthXDependency
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlmodel import Session
 
@@ -73,4 +73,4 @@ async def logout(
     """
 
     deps.unset_access_cookies()
-    return {"message": "Logout successful"}
+    return Response(content="Logout successful", status_code=status.HTTP_200_OK)

@@ -7,7 +7,7 @@ from uuid import UUID
 from fastapi import HTTPException, Response, status
 from sqlmodel import Session, select
 
-from src.models.device import Device
+from src.models import Device
 from src.schemas.device import UpdateDeviceSchema
 
 

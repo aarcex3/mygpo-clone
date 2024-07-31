@@ -14,8 +14,8 @@ class UserList(SQLModel, table=True):
     """User podcast list in DB model"""
 
     id: Optional[int] = Field(default=None, index=True, primary_key=True)
-    name: str = Field(index=True)
-    title: str = Field(index=True)
+    name: str = Field(index=True, unique=True)
+    title: str
     web: str
     owner: "User" = Relationship(back_populates="podcast_lists")  # type: ignore
     owner_id: Optional[int] = Field(foreign_key="user.id")

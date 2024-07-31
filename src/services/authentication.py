@@ -9,7 +9,7 @@ from fastapi.security import HTTPBasicCredentials
 from sqlmodel import Session, select
 
 from src.dependecies import SECURITY
-from src.models.user import User
+from src.models import User
 from src.schemas.authentication import RegistrationSchema
 from src.utils.authentication import check_password, hash_password
 from src.utils.device import create_user_device

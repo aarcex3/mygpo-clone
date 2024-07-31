@@ -27,6 +27,8 @@ clean:
 
 # Test target to run pytest with specified options
 test:
+	rm -f testing.sqlite
+	sqlite3 testing.sqlite < init.sql
 	$(PYTEST) $(TEST_DIR)/test_*.py -vv -s --showlocals
 
 # Run target to start the application

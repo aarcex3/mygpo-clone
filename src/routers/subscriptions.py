@@ -4,13 +4,13 @@ from sqlmodel import Session
 
 from src.database import get_session
 from src.dependecies import SECURITY
-from src.schemas.subscriptions import SubscriptionChange
+from src.schemas import SubscriptionChange
 from src.services.subscriptions import (
     get_device_subscriptions,
     get_user_subscriptions,
     make_subscriptions_changes,
 )
-from src.utils.responses import format_podcasts_response
+from src.utils.responses import format_query_response
 
 """
 Subscriptions routes
@@ -44,7 +44,7 @@ async def device_subscriptions(
     podcasts = await get_device_subscriptions(
         user_id=payload.sub, device_id=device_id, session=session
     )
-    return format_podcasts_response(podcasts, search_format)
+    return format_query_response(podcasts, search_format)
 
 
 @router.get(
@@ -67,7 +67,7 @@ async def user_subscriptions(
         A list of subscriptions for the user.
     """
     podcasts = await get_user_subscriptions(user_id=int(payload.sub), session=session)
-    return format_podcasts_response(podcasts, search_format)
+    return format_query_response(podcasts, search_format)
 
 
 @router.put("/{username}/{device_id}.{search_format}")

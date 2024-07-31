@@ -14,7 +14,7 @@ from src.services.directory import (
     get_top_podcasts,
     get_top_tags,
 )
-from src.utils.responses import format_podcasts_response
+from src.utils.responses import format_query_response
 
 router = APIRouter(tags=["Directory"])
 
@@ -91,7 +91,7 @@ async def top_podcasts(
         A toplist of podcasts.
     """
     podcasts = await get_top_podcasts(count, session)
-    return format_podcasts_response(podcasts, search_format)
+    return format_query_response(podcasts, search_format)
 
 
 @router.get("/search.{search_format}")
@@ -109,4 +109,4 @@ async def podcast_search(
         The search results for podcasts.
     """
     podcasts = await get_podcasts_by_query(query, session)
-    return format_podcasts_response(podcasts, search_format)
+    return format_query_response(podcasts, search_format)
