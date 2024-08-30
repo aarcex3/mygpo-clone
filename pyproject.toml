@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "mygpo-clone"
+version = "0.1.0"
+description = ""
+authors = ["Agustin Arce <agustinarceprincich@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+litestar = {extras = ["sqlalchemy"], version = "^2.10.0"}
+pydantic = {extras = ["email"], version = "^2.8.2"}
+uvicorn = "^0.30.6"
+cryptography = "^43.0.0"
+python-jose = "^3.3.0"
+rsa = "^4.9"
+redis = "^5.0.8"
+pydantic-settings = "^2.4.0"
+aioredis = "^2.0.1"
+asyncpg = "^0.29.0"
+psycopg2-binary = "^2.9.9"
+psycopg = {extras = ["binary", "pool"], version = "^3.2.1"}
+
+
+
+
+
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+pytest-sugar = "^1.0.0"
+black = "^24.8.0"
+bcrypt = "^4.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

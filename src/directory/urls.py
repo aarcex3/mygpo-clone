@@ -1,0 +1,6 @@
+RETRIEVE_TOP_TAGS: str = "/tags/{count:int}"
+RETRIEVE_PODCASTS_FOR_TAG: str = "/tags/{tag:str}/{count:int}"
+RETRIEVE_PODCAST_DATA: str = "/data/podcast"
+RETRIEVE_EPISODE_DATA: str = "/data/episode"
+PODCAST_TOPLIST: str = "/toplist/{count:int}"
+PODCAST_SEARCH: str = "/search"
