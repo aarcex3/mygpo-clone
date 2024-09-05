@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Optional, Sequence
 
 from advanced_alchemy.filters import LimitOffset, OrderBy
 from litestar import MediaType, get
@@ -44,9 +44,16 @@ class DirectoryController(Controller):
             OrderBy("subscribers_count", "desc"),
         )
 
-    # @get(path=urls.RETRIEVE_PODCAST_DATA, media_type=MediaType.JSON)
-    # async def podcast_data(self, directory_service: DirectoryService, podcast_url: str):
-    #     pass
+    @get(
+        path=urls.RETRIEVE_PODCAST_DATA,
+        media_type=MediaType.JSON,
+        return_dto=PodcastDTO,
+    )
+    async def podcast_data(
+        self, podcast_service: PodcastService, podcast_url: str
+    ) -> Optional[Podcast]:
+        podcast = await podcast_service.get_one_or_none(Podcast.xml_url == podcast_url)
+        return podcast if podcast else None
 
     # @get(path=urls.RETRIEVE_EPISODE_DATA, media_type=MediaType.JSON)
     # async def episode_data(self, directory_service: DirectoryService, episode_url: str):
