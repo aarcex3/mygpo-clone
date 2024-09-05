@@ -1,7 +1,9 @@
+from typing import Final
+
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase
 from sqlalchemy import Column, ForeignKey, Table
 
-PodcastTag = Table(
+PodcastTag: Final[Table] = Table(
     "podcast_tag",
     UUIDAuditBase.metadata,
     Column(
