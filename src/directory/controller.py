@@ -1,9 +1,10 @@
 from typing import Sequence
 
+from advanced_alchemy.filters import LimitOffset, OrderBy
 from litestar import MediaType, get
 from litestar.controller import Controller
 from litestar.repository.filters import LimitOffset, OrderBy
-from sqlalchemy import select
+from sqlalchemy import distinct, select
 
 from src.directory import urls
 from src.podcast.dto import PodcastDTO
@@ -31,11 +32,14 @@ class DirectoryController(Controller):
         return_dto=PodcastDTO,
     )
     async def podcasts_for_tag(
-        self, podcast_service: PodcastService, tag: str, count: int = 3
+        self,
+        podcast_service: PodcastService,
+        tag_code: str,
+        count: int = 3,
     ) -> Sequence[Podcast]:
-        filters = Tag.code == tag
+
         return await podcast_service.list(
-            *filters,
+            PodcastTag.c.tag_id.in_(select(Tag.id).where(Tag.code == tag_code)),
             LimitOffset(limit=count, offset=0),
             OrderBy("subscribers_count", "desc"),
         )

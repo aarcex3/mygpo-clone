@@ -11,5 +11,7 @@ class Tag(UUIDAuditBase):
     code: Mapped[str] = mapped_column(unique=True, index=True)
     usage: Mapped[int]
     podcasts: Mapped[list["Podcast"]] = relationship(  # type: ignore
-        "Podcast", secondary=PodcastTag, back_populates="tags", lazy="selectin"
+        "Podcast",
+        secondary=PodcastTag,
+        back_populates="tags",
     )

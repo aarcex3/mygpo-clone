@@ -1,5 +1,5 @@
 from collections.abc import AsyncGenerator
-from typing import Any, Sequence
+from typing import Any
 
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 from sqlalchemy import select

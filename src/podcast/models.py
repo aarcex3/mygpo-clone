@@ -1,4 +1,5 @@
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase
+from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.podcast_tag.models import PodcastTag
@@ -14,5 +15,8 @@ class Podcast(UUIDAuditBase):
     subscribers_count: Mapped[int]
     author: Mapped[str]
     tags: Mapped[list["Tag"]] = relationship(  # type: ignore
-        "Tag", secondary=PodcastTag, back_populates="podcasts", lazy="selectin"
+        "Tag",
+        secondary=PodcastTag,
+        back_populates="podcasts",
     )
+    tag_list: AssociationProxy[list[str]] = association_proxy("tags", "name")
