@@ -1,42 +1,42 @@
 # Variables
-PYTHON := poetry run python
-PYTEST := poetry run pytest
-BLACK := poetry run black
+GO := go
+FMT := gofmt -w
 FIND := find
 
 # Directories
-SRC_DIR := src
-TEST_DIR := tests
+SRC_DIR := ./cmd
+TEST_DIR := ./...
 
 # Targets
-.PHONY: clean test run
+.PHONY: clean test format run docker init_db
 
-
-# Init database
+# Init database (assuming there's an init.sql for Go-related DB setup)
 init_db:
 	rm -f mygpo-clone.sqlite
 	sqlite3 mygpo-clone.sqlite < init.sql
 	
-#Format the files
+# Format the Go source files
 format:
-	$(BLACK) $(SRC_DIR)
+	$(FMT) $(SRC_DIR)
+	$(FMT) $(TEST_DIR)
 
-# Clean target to delete __pycache__ directories
+# Clean target to delete Go build and temporary files
 clean:
-	$(FIND) . -type d -name "__pycache__" -exec rm -rf {} +
+	$(GO) clean
+	$(FIND) . -type d -name "__pycache__" -exec rm -rf {} + # Remove Python cache files if any
+	$(FIND) . -type d -name "*.test" -exec rm -rf {} +     # Remove Go test binaries if any
 	docker-compose down --volumes --rmi all
 
-# Test target to run pytest with specified options
+# Test target to run Go tests with specified options
 test:
 	rm -f testing.sqlite
 	sqlite3 testing.sqlite < init.sql
-	$(PYTEST) $(TEST_DIR)/test_*.py -vv -s --showlocals
+	$(GO) test $(TEST_DIR) -v
 
-# Run target to start the application
+# Run target to start the Go application
 run:
-	$(PYTHON) -m $(SRC_DIR).main
+	$(GO) run $(SRC_DIR)/main.go
 
-
+# Build and run Docker container
 docker:
 	docker-compose up --build
-
