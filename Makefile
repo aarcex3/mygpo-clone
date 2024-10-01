@@ -5,7 +5,7 @@ FIND := find
 
 # Directories
 SRC_DIR := ./cmd
-TEST_DIR := ./...
+TEST_DIR := ./test
 
 # Targets
 .PHONY: clean test format run docker init_db
@@ -23,8 +23,6 @@ format:
 # Clean target to delete Go build and temporary files
 clean:
 	$(GO) clean
-	$(FIND) . -type d -name "__pycache__" -exec rm -rf {} + # Remove Python cache files if any
-	$(FIND) . -type d -name "*.test" -exec rm -rf {} +     # Remove Go test binaries if any
 	docker-compose down --volumes --rmi all
 
 # Test target to run Go tests with specified options
@@ -35,7 +33,7 @@ test:
 
 # Run target to start the Go application
 run:
-	$(GO) run $(SRC_DIR)/main.go
+	$(GO) run $(SRC_DIR)/api/main.go
 
 # Build and run Docker container
 docker:
