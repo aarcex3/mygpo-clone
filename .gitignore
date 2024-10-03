@@ -25,5 +25,5 @@ go.work.sum
 .env
 
 # sqlite
-.sqlite3
-.sqlite
+*.sqlite3
+*.sqlite

@@ -28,23 +28,28 @@ func TestRegistration(t *testing.T) {
 
 	internals.SetUpApp(app, db)
 
-	// Prepare the registration form data
 	form := url.Values{}
 	form.Set("username", "johndoe")
 	form.Set("email", "john@example.com")
 	form.Set("password", "supersecretpassword")
 
-	// Perform the registration request
 	w := performRegistrationRequest(app, form)
 
-	// Assert the response status and body
 	assert.Equal(t, http.StatusCreated, w.Code)
 	assert.Equal(t, "{\"message\":\"Registration successful\"}", w.Body.String())
 
-	// Verify the user is created in the database
 	var count int
 	if err := db.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?", "johndoe").Scan(&count); err != nil {
 		t.Fatalf("Failed to count users: %v", err)
 	}
 	assert.Equal(t, 1, count)
+
+	form = url.Values{}
+	form.Set("username", "johndoe")
+	form.Set("email", "john@example.com")
+	form.Set("password", "supersecretpassword")
+
+	w = performRegistrationRequest(app, form)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, "{\"message\":\"User already exists\"}", w.Body.String())
 }

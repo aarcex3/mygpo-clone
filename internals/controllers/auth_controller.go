@@ -19,14 +19,19 @@ func NewAuthController(authService services.AuthService) *AuthController {
 func (c *AuthController) Registration(ctx *gin.Context) {
 	var user schemas.User
 
+	// Validate the incoming form data
 	if err := ctx.ShouldBind(&user); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
 
+	// Attempt to register the user
 	if err := c.AuthService.Register(ctx, &user); err != nil {
-
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if err.Error() == "user already exists" {
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "User already exists"})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "Registration failed"})
 		return
 	}
 

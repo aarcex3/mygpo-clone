@@ -24,12 +24,12 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
-const getUser = `-- name: GetUser :one
+const getUserById = `-- name: GetUserById :one
 SELECT id, username, password, email FROM users WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUser, id)
+func (q *Queries) GetUserById(ctx context.Context, id int64) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserById, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -38,4 +38,20 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 		&i.Email,
 	)
 	return i, err
+}
+
+const userExists = `-- name: UserExists :one
+SELECT count(*) FROM users WHERE username = ? OR email = ?
+`
+
+type UserExistsParams struct {
+	Username string
+	Email    string
+}
+
+func (q *Queries) UserExists(ctx context.Context, arg UserExistsParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, userExists, arg.Username, arg.Email)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }

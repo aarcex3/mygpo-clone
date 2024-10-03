@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/aarcex3/mygpo-clone/internals/repositories"
 	"github.com/aarcex3/mygpo-clone/internals/schemas"
 	"github.com/gin-gonic/gin"
@@ -23,10 +25,15 @@ func NewAuthService(repo repositories.UserRepository) *service {
 func (s *service) Register(ctx *gin.Context, user *schemas.User) error {
 	hashedPassword, err := s.HashPassword(user.Password)
 	if err != nil {
-		return err // Handle the error if hashing fails
+		return err
 	}
+	if s.UserRepository.UserExists(ctx, user.Username, user.Email) {
+		return errors.New("user already exists")
+	}
+
 	if err := s.UserRepository.Add(ctx, user.Username, hashedPassword, user.Email); err != nil {
 		return err
+
 	}
 	return nil
 
