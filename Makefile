@@ -17,8 +17,7 @@ init_db:
 	
 # Format the Go source files
 format:
-	$(FMT) $(SRC_DIR)
-	$(FMT) $(TEST_DIR)
+	$(FMT) ./
 
 # Clean target to delete Go build and temporary files
 clean:

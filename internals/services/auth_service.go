@@ -1,28 +1,31 @@
 package services
 
-import "github.com/aarcex3/mygpo-clone/internals/schemas"
+import (
+	"github.com/aarcex3/mygpo-clone/internals/repositories"
+	"github.com/aarcex3/mygpo-clone/internals/schemas"
+)
 
-type IAuthService interface {
+type AuthService interface {
 	Register(user *schemas.User) error
 	Authenticate(username, password string) (bool, error)
 }
 
-type AuthService struct {
-	// UserRepository repositores.UserRepository
+type service struct {
+	UserRepository repositories.UserRepository
 }
 
-// func NewAuthService(repo repositories.UserRepository) *AuthService {
-//     return &AuthService{UserRepository: repo}
-// }
+func NewAuthService(repo repositories.UserRepository) *service {
+	return &service{UserRepository: repo}
+}
 
-func (s *AuthService) Register(user *schemas.User) error {
-	// if err := s.UserRepository.CreateUser(user.Username, user.Password, user.Email); err != nill {
+func (s *service) Register(user *schemas.User) error {
+	// if err := s.UserRepository.Add(user.Username, user.Password, user.Email); err != nill {
 	//
 	//}
 	return nil
 
 }
-func (s *AuthService) Authenticate(username, password string) (bool, error) {
-	//var user models.User = s.UserRepository.FindUser(username)
+func (s *service) Authenticate(username, password string) (bool, error) {
+	//var user database.User = s.UserRepository.FindUser(username)
 	return true, nil
 }
