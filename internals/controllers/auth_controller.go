@@ -24,11 +24,11 @@ func (c *AuthController) Registration(ctx *gin.Context) {
 		return
 	}
 
-	// if err := c.AuthService.Register(&user); err != nil {
+	if err := c.AuthService.Register(ctx, &user); err != nil {
 
-	// 	ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	ctx.JSON(http.StatusCreated, gin.H{"message": "Registration successful"})
 }

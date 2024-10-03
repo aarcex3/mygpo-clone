@@ -5,7 +5,7 @@
 package database
 
 type User struct {
-	ID       interface{}
+	ID       int64
 	Username string
 	Password string
 	Email    string

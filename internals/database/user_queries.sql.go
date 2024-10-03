@@ -28,7 +28,7 @@ const getUser = `-- name: GetUser :one
 SELECT id, username, password, email FROM users WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id interface{}) (User, error) {
+func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
 	err := row.Scan(

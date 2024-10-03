@@ -1,7 +1,7 @@
-CREATE TABLE
+CREATE TABLE 
     users (
-        id BIGSERIAL PRIMARY KEY,
-        username text NOT NULL,
-        password text NOT NULL,
-        email text NOT NULL
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        password TEXT NOT NULL,
+        email TEXT NOT NULL
     );

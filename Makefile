@@ -12,8 +12,8 @@ TEST_DIR := ./test
 
 # Init database (assuming there's an init.sql for Go-related DB setup)
 init_db:
-	rm -f mygpo-clone.sqlite
-	sqlite3 mygpo-clone.sqlite < init.sql
+	rm -f mygpo-clone.sqlite3
+	sqlite3 mygpo-clone.sqlite3 < ./internals/sql/schemas.sql
 	
 # Format the Go source files
 format:
@@ -26,9 +26,7 @@ clean:
 
 # Test target to run Go tests with specified options
 test:
-	rm -f testing.sqlite
-	sqlite3 testing.sqlite < init.sql
-	$(GO) test $(TEST_DIR) -v
+	gotestsum $(TEST_DIR) 
 
 # Run target to start the Go application
 run:
