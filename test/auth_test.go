@@ -1,6 +1,7 @@
 package test
 
 import (
+	"database/sql"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -13,107 +14,115 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func performRegistrationRequest(app *gin.Engine, form url.Values) *httptest.ResponseRecorder {
+// Helper to perform a request
+func performRequest(app *gin.Engine, method, path string, form url.Values) *httptest.ResponseRecorder {
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/v1/auth/registration", strings.NewReader(form.Encode()))
+	req, _ := http.NewRequest(method, path, strings.NewReader(form.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	app.ServeHTTP(res, req)
 	return res
 }
 
-func performLoginRequest(app *gin.Engine, form url.Values) *httptest.ResponseRecorder {
-	res := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/v1/auth/login", strings.NewReader(form.Encode()))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	app.ServeHTTP(res, req)
-	return res
+// Common setup for the tests
+func setupAppWithDB() (*gin.Engine, *sql.DB, func()) {
+	app := gin.Default()
+	db, cleanup := testconfig.SetupDatabase()
+	internals.SetUpApp(app, db)
+	return app, db, cleanup
 }
 
 func TestRegistration(t *testing.T) {
-	// Set up
-	app := gin.Default()
-	db, cleanup := testconfig.SetupDatabase()
-	defer cleanup()
+	t.Run("Normal registration", func(t *testing.T) {
+		app, db, cleanup := setupAppWithDB()
+		defer cleanup()
 
-	internals.SetUpApp(app, db)
+		form := url.Values{
+			"username": {"johndoe"},
+			"email":    {"john@example.com"},
+			"password": {"supersecretpassword"},
+		}
 
-	form := url.Values{}
-	form.Set("username", "johndoe")
-	form.Set("email", "john@example.com")
-	form.Set("password", "supersecretpassword")
+		res := performRequest(app, "POST", "/v1/auth/registration", form)
+		assert.Equal(t, http.StatusCreated, res.Code)
+		assert.JSONEq(t, `{"message":"Registration successful"}`, res.Body.String())
 
-	res := performRegistrationRequest(app, form)
+		var count int
+		err := db.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?", "johndoe").Scan(&count)
+		assert.NoError(t, err)
+		assert.Equal(t, 1, count)
+	})
 
-	assert.Equal(t, http.StatusCreated, res.Code)
-	assert.JSONEq(t, `{"message":"Registration successful"}`, res.Body.String())
+	t.Run("Try to register an existing user", func(t *testing.T) {
+		app, _, cleanup := setupAppWithDB()
+		defer cleanup()
 
-	var count int
-	if err := db.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?", "johndoe").Scan(&count); err != nil {
-		t.Fatalf("Failed to count users: %v", err)
-	}
-	assert.Equal(t, 1, count)
+		form := url.Values{
+			"username": {"johndoe"},
+			"email":    {"john@example.com"},
+			"password": {"supersecretpassword"},
+		}
 
-	// Try to register an existing user
-	form = url.Values{}
-	form.Set("username", "johndoe")
-	form.Set("email", "john@example.com")
-	form.Set("password", "supersecretpassword")
+		_ = performRequest(app, "POST", "/v1/auth/registration", form)
 
-	res = performRegistrationRequest(app, form)
-	assert.Equal(t, http.StatusBadRequest, res.Code)
-	assert.JSONEq(t, `{"message":"User already exists"}`, res.Body.String())
+		// Try registering the same user again
+		res := performRequest(app, "POST", "/v1/auth/registration", form)
+		assert.Equal(t, http.StatusBadRequest, res.Code)
+		assert.JSONEq(t, `{"message":"User already exists"}`, res.Body.String())
+	})
 }
 
 func TestLogin(t *testing.T) {
-	// Set up
-	app := gin.Default()
-	db, cleanup := testconfig.SetupDatabase()
+	app, _, cleanup := setupAppWithDB()
 	defer cleanup()
 
-	internals.SetUpApp(app, db)
+	// Register the user first
+	registrationForm := url.Values{
+		"username": {"johndoe"},
+		"email":    {"john@example.com"},
+		"password": {"supersecretpassword"},
+	}
+	_ = performRequest(app, "POST", "/v1/auth/registration", registrationForm)
 
-	form := url.Values{}
-	form.Set("username", "johndoe")
-	form.Set("email", "john@example.com")
-	form.Set("password", "supersecretpassword")
-	_ = performRegistrationRequest(app, form)
+	t.Run("Successful login", func(t *testing.T) {
+		form := url.Values{
+			"username": {"johndoe"},
+			"password": {"supersecretpassword"},
+		}
+		res := performRequest(app, "POST", "/v1/auth/login", form)
 
-	// Normal login
-	form = url.Values{}
-	form.Set("username", "johndoe")
-	form.Set("password", "supersecretpassword")
+		assert.Equal(t, http.StatusOK, res.Code)
+		assert.JSONEq(t, `{"message": "Login successful"}`, res.Body.String())
 
-	res := performLoginRequest(app, form)
-	assert.Equal(t, http.StatusOK, res.Code)
-	assert.JSONEq(t, `{"message": "Login successful"}`, res.Body.String())
+		authHeader := res.Header().Get("Authorization")
+		assert.NotEmpty(t, authHeader)
+		assert.Contains(t, authHeader, "Bearer")
+	})
 
-	authHeader := res.Header().Get("Authorization")
-	assert.NotEmpty(t, authHeader, "Authorization header should be set")
-	assert.Contains(t, authHeader, "Bearer", "Authorization header should contain Bearer token")
+	t.Run("Login with wrong username", func(t *testing.T) {
+		form := url.Values{
+			"username": {"johndo"},
+			"password": {"supersecretpassword"},
+		}
+		res := performRequest(app, "POST", "/v1/auth/login", form)
 
-	// Wrong username
-	form = url.Values{}
-	form.Set("username", "johndo")
-	form.Set("password", "supersecretpassword")
+		assert.Equal(t, http.StatusUnauthorized, res.Code)
+		assert.JSONEq(t, `{"message": "Login error"}`, res.Body.String())
 
-	res = performLoginRequest(app, form)
-	assert.Equal(t, http.StatusUnauthorized, res.Code)
-	assert.JSONEq(t, `{"message": "Login error"}`, res.Body.String())
+		authHeader := res.Header().Get("Authorization")
+		assert.Empty(t, authHeader)
+	})
 
-	authHeader = res.Header().Get("Authorization")
-	assert.Empty(t, authHeader, "Authorization header should  not be set")
-	assert.NotContains(t, authHeader, "Bearer", "Authorization header should  not contain Bearer token")
+	t.Run("Login with wrong password", func(t *testing.T) {
+		form := url.Values{
+			"username": {"johndoe"},
+			"password": {"notasecretpassword"},
+		}
+		res := performRequest(app, "POST", "/v1/auth/login", form)
 
-	// Wrong password
-	form = url.Values{}
-	form.Set("username", "johndoe")
-	form.Set("password", "notasecretpassword")
+		assert.Equal(t, http.StatusUnauthorized, res.Code)
+		assert.JSONEq(t, `{"message": "Login error"}`, res.Body.String())
 
-	res = performLoginRequest(app, form)
-	assert.Equal(t, http.StatusUnauthorized, res.Code)
-	assert.JSONEq(t, `{"message": "Login error"}`, res.Body.String())
-
-	authHeader = res.Header().Get("Authorization")
-	assert.Empty(t, authHeader, "Authorization header should  not be set")
-	assert.NotContains(t, authHeader, "Bearer", "Authorization header should  not contain Bearer token")
+		authHeader := res.Header().Get("Authorization")
+		assert.Empty(t, authHeader)
+	})
 }

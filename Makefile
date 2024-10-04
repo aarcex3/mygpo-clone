@@ -26,7 +26,7 @@ clean:
 
 # Test target to run Go tests with specified options
 test:
-	gotestsum $(TEST_DIR) 
+	gotestsum --format testname $(TEST_DIR) 
 
 # Run target to start the Go application
 run:
