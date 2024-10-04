@@ -17,16 +17,16 @@ func NewAuthController(authService services.AuthService) *AuthController {
 }
 
 func (c *AuthController) Registration(ctx *gin.Context) {
-	var user schemas.User
+	var form schemas.Registration
 
 	// Validate the incoming form data
-	if err := ctx.ShouldBind(&user); err != nil {
+	if err := ctx.ShouldBind(&form); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
 
 	// Attempt to register the user
-	if err := c.AuthService.Register(ctx, &user); err != nil {
+	if err := c.AuthService.Register(ctx, &form); err != nil {
 		if err.Error() == "user already exists" {
 			ctx.JSON(http.StatusBadRequest, gin.H{"message": "User already exists"})
 			return
@@ -39,7 +39,21 @@ func (c *AuthController) Registration(ctx *gin.Context) {
 }
 
 func (c *AuthController) Login(ctx *gin.Context) {
-	ctx.JSON(http.StatusCreated, gin.H{"message": "Login successful"})
+	var form schemas.Login
+	if err := ctx.ShouldBind(&form); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+		return
+	}
+	token, err := c.AuthService.Authenticate(ctx, &form)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Login error"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Login successful",
+	})
+	ctx.Header("Authorization", "Bearer "+token)
 }
 
 func (c *AuthController) Logout(ctx *gin.Context) {

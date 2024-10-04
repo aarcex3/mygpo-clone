@@ -1,8 +1,6 @@
 package repositories
 
 import (
-	"net/http"
-
 	"github.com/aarcex3/mygpo-clone/internals/database"
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +8,7 @@ import (
 type UserRepository interface {
 	Add(ctx *gin.Context, username, password, email string) error
 	UserExists(ctx *gin.Context, username, email string) bool
-	FindUserById(ctx *gin.Context, id int64) database.User
+	FindUserByUsername(ctx *gin.Context, username string) (database.User, error)
 }
 
 type repository struct {
@@ -33,10 +31,10 @@ func (r *repository) UserExists(ctx *gin.Context, username, email string) bool {
 	return count > 0
 }
 
-func (r *repository) FindUserById(ctx *gin.Context, id int64) database.User {
-	var user, err = r.Queries.GetUserById(ctx, id)
+func (r *repository) FindUserByUsername(ctx *gin.Context, username string) (database.User, error) {
+	var user, err = r.Queries.GetUserByUsername(ctx, username)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
+		return database.User{}, err
 	}
-	return user
+	return user, nil
 }
