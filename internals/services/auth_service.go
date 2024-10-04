@@ -48,23 +48,22 @@ func (s *service) Authenticate(cxt *gin.Context, form *schemas.Login) (string, e
 	if err != nil {
 		return "", err
 	}
-	if !s.VerifyPassword(user.Password, form.Password) {
+	if err := s.VerifyPassword(user.Password, form.Password); err != nil {
 		return "", err
 	}
 
 	claims := jwt.MapClaims{
-		"user_id":  user.ID,                               
-		"username": user.Username,                        
-		"exp":      time.Now().Add(time.Hour * 72).Unix(), 
+		"user_id":  user.ID,
+		"username": user.Username,
+		"exp":      time.Now().Add(time.Hour * 72).Unix(),
 	}
-	
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(jwtSecret)
 	if err != nil {
 		return "", fmt.Errorf("failed to sign token: %v", err)
 	}
 
-	
 	return tokenString, nil
 }
 
@@ -77,9 +76,6 @@ func (s *service) HashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-func (s *service) VerifyPassword(hashedPassword, password string) bool {
-	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
-		return false
-	}
-	return true
+func (s *service) VerifyPassword(hashedPassword, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
