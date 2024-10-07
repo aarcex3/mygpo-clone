@@ -9,11 +9,11 @@ import (
 )
 
 type AuthController struct {
-	AuthService services.AuthService
+	authService services.AuthService
 }
 
 func NewAuthController(authService services.AuthService) *AuthController {
-	return &AuthController{AuthService: authService}
+	return &AuthController{authService: authService}
 }
 
 func (c *AuthController) Registration(ctx *gin.Context) {
@@ -26,7 +26,7 @@ func (c *AuthController) Registration(ctx *gin.Context) {
 	}
 
 	// Attempt to register the user
-	if err := c.AuthService.Register(ctx, &form); err != nil {
+	if err := c.authService.Register(ctx, &form); err != nil {
 		if err.Error() == "user already exists" {
 			ctx.JSON(http.StatusBadRequest, gin.H{"message": "User already exists"})
 			return
@@ -44,7 +44,7 @@ func (c *AuthController) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-	token, err := c.AuthService.Authenticate(ctx, &form)
+	token, err := c.authService.Authenticate(ctx, &form)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Login error"})
 		return

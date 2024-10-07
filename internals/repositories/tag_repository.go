@@ -10,14 +10,14 @@ type TagRepository interface {
 }
 
 type tagRepository struct {
-	Queries database.Queries
+	queries database.Queries
 }
 
 func NewTagRepository(queries database.Queries) *tagRepository {
-	return &tagRepository{Queries: queries}
+	return &tagRepository{queries: queries}
 }
 
 func (tr *tagRepository) GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error) {
-	tags, err := tr.Queries.TopTags(ctx)
+	tags, err := tr.queries.TopTags(ctx)
 	return tags, err
 }

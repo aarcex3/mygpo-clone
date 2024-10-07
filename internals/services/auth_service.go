@@ -20,11 +20,11 @@ type AuthService interface {
 }
 
 type authservice struct {
-	UserRepository repositories.UserRepository
+	userRepository repositories.UserRepository
 }
 
 func NewAuthService(repo repositories.UserRepository) *authservice {
-	return &authservice{UserRepository: repo}
+	return &authservice{userRepository: repo}
 }
 
 func (as *authservice) Register(ctx *gin.Context, form *schemas.Registration) error {
@@ -32,11 +32,11 @@ func (as *authservice) Register(ctx *gin.Context, form *schemas.Registration) er
 	if err != nil {
 		return err
 	}
-	if as.UserRepository.UserExists(ctx, form.Username, form.Email) {
+	if as.userRepository.UserExists(ctx, form.Username, form.Email) {
 		return errors.New("user already exists")
 	}
 
-	if err := as.UserRepository.Add(ctx, form.Username, hashedPassword, form.Email); err != nil {
+	if err := as.userRepository.Add(ctx, form.Username, hashedPassword, form.Email); err != nil {
 		return err
 
 	}
@@ -44,7 +44,7 @@ func (as *authservice) Register(ctx *gin.Context, form *schemas.Registration) er
 
 }
 func (as *authservice) Authenticate(cxt *gin.Context, form *schemas.Login) (string, error) {
-	user, err := as.UserRepository.FindUserByUsername(cxt, form.Username)
+	user, err := as.userRepository.FindUserByUsername(cxt, form.Username)
 	if err != nil {
 		return "", err
 	}
