@@ -3,6 +3,8 @@ package testconfig
 import (
 	"database/sql"
 	"log"
+	"net/http"
+	"net/http/httptest"
 
 	"github.com/aarcex3/mygpo-clone/internals"
 	"github.com/gin-gonic/gin"
@@ -64,4 +66,11 @@ func SetupAppWithDB() (*gin.Engine, *sql.DB, func()) {
 	db, cleanup := SetupDatabase()
 	internals.SetUpApp(app, db)
 	return app, db, cleanup
+}
+
+func PerformRequest(app *gin.Engine, method, path string) *httptest.ResponseRecorder {
+	res := httptest.NewRecorder()
+	req, _ := http.NewRequest(method, path, nil)
+	app.ServeHTTP(res, req)
+	return res
 }
