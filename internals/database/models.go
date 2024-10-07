@@ -4,6 +4,13 @@
 
 package database
 
+type Tag struct {
+	ID    int64
+	Title string
+	Code  string
+	Usage int64
+}
+
 type User struct {
 	ID       int64
 	Username string
