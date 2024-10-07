@@ -19,36 +19,36 @@ type AuthService interface {
 	Authenticate(cxt *gin.Context, form *schemas.Login) (string, error)
 }
 
-type service struct {
+type authservice struct {
 	UserRepository repositories.UserRepository
 }
 
-func NewAuthService(repo repositories.UserRepository) *service {
-	return &service{UserRepository: repo}
+func NewAuthService(repo repositories.UserRepository) *authservice {
+	return &authservice{UserRepository: repo}
 }
 
-func (s *service) Register(ctx *gin.Context, form *schemas.Registration) error {
-	hashedPassword, err := s.HashPassword(form.Password)
+func (as *authservice) Register(ctx *gin.Context, form *schemas.Registration) error {
+	hashedPassword, err := as.HashPassword(form.Password)
 	if err != nil {
 		return err
 	}
-	if s.UserRepository.UserExists(ctx, form.Username, form.Email) {
+	if as.UserRepository.UserExists(ctx, form.Username, form.Email) {
 		return errors.New("user already exists")
 	}
 
-	if err := s.UserRepository.Add(ctx, form.Username, hashedPassword, form.Email); err != nil {
+	if err := as.UserRepository.Add(ctx, form.Username, hashedPassword, form.Email); err != nil {
 		return err
 
 	}
 	return nil
 
 }
-func (s *service) Authenticate(cxt *gin.Context, form *schemas.Login) (string, error) {
-	user, err := s.UserRepository.FindUserByUsername(cxt, form.Username)
+func (as *authservice) Authenticate(cxt *gin.Context, form *schemas.Login) (string, error) {
+	user, err := as.UserRepository.FindUserByUsername(cxt, form.Username)
 	if err != nil {
 		return "", err
 	}
-	if err := s.VerifyPassword(user.Password, form.Password); err != nil {
+	if err := as.VerifyPassword(user.Password, form.Password); err != nil {
 		return "", err
 	}
 
@@ -67,7 +67,7 @@ func (s *service) Authenticate(cxt *gin.Context, form *schemas.Login) (string, e
 	return tokenString, nil
 }
 
-func (s *service) HashPassword(password string) (string, error) {
+func (as *authservice) HashPassword(password string) (string, error) {
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -76,6 +76,6 @@ func (s *service) HashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-func (s *service) VerifyPassword(hashedPassword, password string) error {
+func (as *authservice) VerifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
