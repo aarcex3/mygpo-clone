@@ -1,21 +1,19 @@
 package test
 
 import (
-	"database/sql"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
 
-	"github.com/aarcex3/mygpo-clone/internals"
 	"github.com/aarcex3/mygpo-clone/test/testconfig"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
 // Helper to perform a request
-func performRequest(app *gin.Engine, method, path string, form url.Values) *httptest.ResponseRecorder {
+func performFormRequest(app *gin.Engine, method, path string, form url.Values) *httptest.ResponseRecorder {
 	res := httptest.NewRecorder()
 	req, _ := http.NewRequest(method, path, strings.NewReader(form.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -23,17 +21,9 @@ func performRequest(app *gin.Engine, method, path string, form url.Values) *http
 	return res
 }
 
-// Common setup for the tests
-func setupAppWithDB() (*gin.Engine, *sql.DB, func()) {
-	app := gin.Default()
-	db, cleanup := testconfig.SetupDatabase()
-	internals.SetUpApp(app, db)
-	return app, db, cleanup
-}
-
 func TestRegistration(t *testing.T) {
 	t.Run("Normal registration", func(t *testing.T) {
-		app, db, cleanup := setupAppWithDB()
+		app, db, cleanup := testconfig.SetupAppWithDB()
 		defer cleanup()
 
 		form := url.Values{
@@ -42,7 +32,7 @@ func TestRegistration(t *testing.T) {
 			"password": {"supersecretpassword"},
 		}
 
-		res := performRequest(app, "POST", "/v1/auth/registration", form)
+		res := performFormRequest(app, "POST", "/v1/auth/registration", form)
 		assert.Equal(t, http.StatusCreated, res.Code)
 		assert.JSONEq(t, `{"message":"Registration successful"}`, res.Body.String())
 
@@ -53,7 +43,7 @@ func TestRegistration(t *testing.T) {
 	})
 
 	t.Run("Try to register an existing user", func(t *testing.T) {
-		app, _, cleanup := setupAppWithDB()
+		app, _, cleanup := testconfig.SetupAppWithDB()
 		defer cleanup()
 
 		form := url.Values{
@@ -62,17 +52,17 @@ func TestRegistration(t *testing.T) {
 			"password": {"supersecretpassword"},
 		}
 
-		_ = performRequest(app, "POST", "/v1/auth/registration", form)
+		_ = performFormRequest(app, "POST", "/v1/auth/registration", form)
 
 		// Try registering the same user again
-		res := performRequest(app, "POST", "/v1/auth/registration", form)
+		res := performFormRequest(app, "POST", "/v1/auth/registration", form)
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 		assert.JSONEq(t, `{"message":"User already exists"}`, res.Body.String())
 	})
 }
 
 func TestLogin(t *testing.T) {
-	app, _, cleanup := setupAppWithDB()
+	app, _, cleanup := testconfig.SetupAppWithDB()
 	defer cleanup()
 
 	// Register the user first
@@ -81,14 +71,14 @@ func TestLogin(t *testing.T) {
 		"email":    {"john@example.com"},
 		"password": {"supersecretpassword"},
 	}
-	_ = performRequest(app, "POST", "/v1/auth/registration", registrationForm)
+	_ = performFormRequest(app, "POST", "/v1/auth/registration", registrationForm)
 
 	t.Run("Successful login", func(t *testing.T) {
 		form := url.Values{
 			"username": {"johndoe"},
 			"password": {"supersecretpassword"},
 		}
-		res := performRequest(app, "POST", "/v1/auth/login", form)
+		res := performFormRequest(app, "POST", "/v1/auth/login", form)
 
 		assert.Equal(t, http.StatusOK, res.Code)
 		assert.JSONEq(t, `{"message": "Login successful"}`, res.Body.String())
@@ -103,7 +93,7 @@ func TestLogin(t *testing.T) {
 			"username": {"johndo"},
 			"password": {"supersecretpassword"},
 		}
-		res := performRequest(app, "POST", "/v1/auth/login", form)
+		res := performFormRequest(app, "POST", "/v1/auth/login", form)
 
 		assert.Equal(t, http.StatusUnauthorized, res.Code)
 		assert.JSONEq(t, `{"message": "Login error"}`, res.Body.String())
@@ -117,7 +107,7 @@ func TestLogin(t *testing.T) {
 			"username": {"johndoe"},
 			"password": {"notasecretpassword"},
 		}
-		res := performRequest(app, "POST", "/v1/auth/login", form)
+		res := performFormRequest(app, "POST", "/v1/auth/login", form)
 
 		assert.Equal(t, http.StatusUnauthorized, res.Code)
 		assert.JSONEq(t, `{"message": "Login error"}`, res.Body.String())
