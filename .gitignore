@@ -27,3 +27,5 @@ go.work.sum
 # sqlite
 *.sqlite3
 *.sqlite
+
+nothing/

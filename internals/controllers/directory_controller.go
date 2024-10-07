@@ -21,5 +21,5 @@ func (dc *DirectoryController) RetrieveTopTags(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "Something failed"})
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"top_tags": tags})
+	ctx.JSON(http.StatusOK, tags)
 }

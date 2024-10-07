@@ -18,12 +18,15 @@ func SetUpApp(app *gin.Engine, db *sql.DB) {
 
 	// Setup repos
 	userRepo := repositories.NewUserRepository(*queries)
+	tagRepo := repositories.NewTagRepository(*queries)
 
 	// Setup services
 	authService := services.NewAuthService(userRepo)
+	tagService := services.NewTagService(tagRepo)
 
 	// Setup controllers
 	authController := controllers.NewAuthController(authService)
+	directoryContrller := controllers.NewDirectoryController(tagService)
 
 	// Setup routes
 	apiV1 := app.Group("/v1")
@@ -32,6 +35,10 @@ func SetUpApp(app *gin.Engine, db *sql.DB) {
 		auth.POST("/registration", authController.Registration)
 		auth.POST("/login", authController.Login)
 		auth.POST("/logout", authController.Logout)
+	}
+	directory := apiV1.Group("/")
+	{
+		directory.GET("/tags", directoryContrller.RetrieveTopTags)
 	}
 
 }

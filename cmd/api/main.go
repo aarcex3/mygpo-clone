@@ -24,7 +24,7 @@ func main() {
 
 	// Start the server in a separate goroutine
 	go func() {
-		if err := app.Run(":8000"); err != nil {
+		if err := app.Run("127.0.0.1:8000"); err != nil {
 			log.Fatal("Server failed to start:", err)
 		}
 	}()
