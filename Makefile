@@ -5,7 +5,7 @@ FIND := find
 
 # Directories
 SRC_DIR := ./cmd
-TEST_DIR := ./test
+
 
 # Targets
 .PHONY: clean test format run docker init_db
@@ -26,11 +26,11 @@ clean:
 
 # Test target to run Go tests with specified options
 test:
-	gotestsum --format testname $(TEST_DIR) 
+	$(GO) test -v 
 
 # Run target to start the Go application
 run:
-	$(GO) run $(SRC_DIR)/api/main.go
+	$(GO) run $(SRC_DIR)/main.go
 
 # Build and run Docker container
 docker:

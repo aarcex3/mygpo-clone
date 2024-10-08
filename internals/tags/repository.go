@@ -1,4 +1,4 @@
-package repositories
+package tags
 
 import (
 	"github.com/aarcex3/mygpo-clone/internals/database"
@@ -9,15 +9,15 @@ type TagRepository interface {
 	GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error)
 }
 
-type tagRepository struct {
+type repository struct {
 	queries database.Queries
 }
 
-func NewTagRepository(queries database.Queries) *tagRepository {
-	return &tagRepository{queries: queries}
+func Repository(queries database.Queries) *repository {
+	return &repository{queries: queries}
 }
 
-func (tr *tagRepository) GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error) {
+func (tr *repository) GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error) {
 	tags, err := tr.queries.TopTags(ctx)
 	return tags, err
 }

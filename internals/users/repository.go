@@ -1,4 +1,4 @@
-package repositories
+package users
 
 import (
 	"github.com/aarcex3/mygpo-clone/internals/database"
@@ -15,15 +15,12 @@ type userRepository struct {
 	queries database.Queries
 }
 
-func NewUserRepository(queries database.Queries) *userRepository {
+func Repository(queries database.Queries) *userRepository {
 	return &userRepository{queries: queries}
 }
 
 func (ur *userRepository) Add(ctx *gin.Context, username string, password string, email string) error {
-	if err := ur.queries.CreateUser(ctx, database.CreateUserParams{Username: username, Password: password, Email: email}); err != nil {
-		return err
-	}
-	return nil
+	return ur.queries.CreateUser(ctx, database.CreateUserParams{Username: username, Password: password, Email: email})
 }
 
 func (ur *userRepository) UserExists(ctx *gin.Context, username, email string) bool {
@@ -33,8 +30,5 @@ func (ur *userRepository) UserExists(ctx *gin.Context, username, email string) b
 
 func (ur *userRepository) FindUserByUsername(ctx *gin.Context, username string) (database.User, error) {
 	var user, err = ur.queries.GetUserByUsername(ctx, username)
-	if err != nil {
-		return database.User{}, err
-	}
-	return user, nil
+	return user, err
 }
