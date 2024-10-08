@@ -1,8 +1,10 @@
-package config
+package test
 
 import (
 	"os"
 	"testing"
+
+	"github.com/aarcex3/mygpo-clone/config"
 )
 
 func TestLoadConfig(t *testing.T) {
@@ -13,7 +15,7 @@ func TestLoadConfig(t *testing.T) {
 	os.Setenv("DatabaseURL", "postgres://user:password@localhost:5432/testdb")
 	os.Setenv("SecretKey", "supersecretkey")
 
-	cfg := LoadConfig()
+	cfg := config.LoadConfig()
 
 	if cfg.ServerPort != "8080" {
 		t.Errorf("Expected ServerPort to be '8080', got '%s'", cfg.ServerPort)
