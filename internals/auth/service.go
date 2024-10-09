@@ -19,10 +19,14 @@ type authService interface {
 
 type service struct {
 	userRepository users.UserRepository
+	config         *config.Config
 }
 
-func Service(repo users.UserRepository) *service {
-	return &service{userRepository: repo}
+func Service(repo users.UserRepository, config *config.Config) *service {
+	return &service{
+		userRepository: repo,
+		config:         config,
+	}
 }
 
 func (as *service) Register(ctx *gin.Context, form *RegistrationForm) error {
@@ -57,8 +61,8 @@ func (as *service) Authenticate(cxt *gin.Context, form *LoginForm) (string, erro
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	secretKey := config.LoadConfig().SecretKey
-	tokenString, err := token.SignedString(secretKey)
+
+	tokenString, err := token.SignedString(as.config.SecretKey)
 	if err != nil {
 		return "", fmt.Errorf("failed to sign token: %v", err)
 	}

@@ -32,7 +32,7 @@ func (a *application) Run() {
 	userRepo := users.Repository(*queries)
 	tagRepo := tags.Repository(*queries)
 
-	authService := auth.Service(userRepo)
+	authService := auth.Service(userRepo, a.config)
 	tagService := tags.Service(tagRepo)
 
 	authController := auth.Controller(authService)

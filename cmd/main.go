@@ -14,14 +14,14 @@ import (
 )
 
 func main() {
-	Config := config.LoadConfig()
+	config := config.LoadConfig("dev")
 	server := gin.Default()
-	db, err := sql.Open(Config.DatabaseEngine, Config.DatabaseURL)
+	db, err := sql.Open(config.DatabaseEngine, config.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	app := app.New(server, db, Config)
+	app := app.New(server, db, config)
 	app.Run()
 
 	quit := make(chan os.Signal, 1)
