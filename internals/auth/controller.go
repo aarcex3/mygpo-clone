@@ -7,10 +7,10 @@ import (
 )
 
 type controller struct {
-	as authService
+	as AuthService
 }
 
-func Controller(authService authService) *controller {
+func Controller(authService AuthService) *controller {
 	return &controller{as: authService}
 }
 

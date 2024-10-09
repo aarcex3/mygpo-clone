@@ -17,7 +17,7 @@ func Service(repo TagRepository) *service {
 	return &service{tagRepository: repo}
 }
 
-func (ts *service) GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error) {
-	tags, err := ts.tagRepository.GetTopTags(ctx)
+func (s *service) GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error) {
+	tags, err := s.tagRepository.GetTopTags(ctx)
 	return tags, err
 }

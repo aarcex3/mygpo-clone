@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type authService interface {
+type AuthService interface {
 	Register(ctx *gin.Context, form *RegistrationForm) error
 	Authenticate(cxt *gin.Context, form *LoginForm) (string, error)
 }
@@ -29,28 +29,28 @@ func Service(repo users.UserRepository, config *config.Config) *service {
 	}
 }
 
-func (as *service) Register(ctx *gin.Context, form *RegistrationForm) error {
-	hashedPassword, err := as.HashPassword(form.Password)
+func (s *service) Register(ctx *gin.Context, form *RegistrationForm) error {
+	hashedPassword, err := s.HashPassword(form.Password)
 	if err != nil {
 		return err
 	}
-	if as.userRepository.UserExists(ctx, form.Username, form.Email) {
+	if s.userRepository.UserExists(ctx, form.Username, form.Email) {
 		return errors.New("user already exists")
 	}
 
-	if err := as.userRepository.Add(ctx, form.Username, hashedPassword, form.Email); err != nil {
+	if err := s.userRepository.Add(ctx, form.Username, hashedPassword, form.Email); err != nil {
 		return err
 
 	}
 	return nil
 
 }
-func (as *service) Authenticate(cxt *gin.Context, form *LoginForm) (string, error) {
-	user, err := as.userRepository.FindUserByUsername(cxt, form.Username)
+func (s *service) Authenticate(cxt *gin.Context, form *LoginForm) (string, error) {
+	user, err := s.userRepository.FindUserByUsername(cxt, form.Username)
 	if err != nil {
 		return "", err
 	}
-	if err := as.VerifyPassword(user.Password, form.Password); err != nil {
+	if err := s.VerifyPassword(user.Password, form.Password); err != nil {
 		return "", err
 	}
 
@@ -62,7 +62,7 @@ func (as *service) Authenticate(cxt *gin.Context, form *LoginForm) (string, erro
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenString, err := token.SignedString(as.config.SecretKey)
+	tokenString, err := token.SignedString(s.config.SecretKey)
 	if err != nil {
 		return "", fmt.Errorf("failed to sign token: %v", err)
 	}
@@ -70,7 +70,7 @@ func (as *service) Authenticate(cxt *gin.Context, form *LoginForm) (string, erro
 	return tokenString, nil
 }
 
-func (as *service) HashPassword(password string) (string, error) {
+func (s *service) HashPassword(password string) (string, error) {
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -79,6 +79,6 @@ func (as *service) HashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-func (as *service) VerifyPassword(hashedPassword, password string) error {
+func (s *service) VerifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }

@@ -17,7 +17,7 @@ func Repository(queries database.Queries) *repository {
 	return &repository{queries: queries}
 }
 
-func (tr *repository) GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error) {
-	tags, err := tr.queries.TopTags(ctx)
+func (repo *repository) GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error) {
+	tags, err := repo.queries.TopTags(ctx)
 	return tags, err
 }

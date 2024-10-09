@@ -11,24 +11,24 @@ type UserRepository interface {
 	FindUserByUsername(ctx *gin.Context, username string) (database.User, error)
 }
 
-type userRepository struct {
+type repository struct {
 	queries database.Queries
 }
 
-func Repository(queries database.Queries) *userRepository {
-	return &userRepository{queries: queries}
+func Repository(queries database.Queries) *repository {
+	return &repository{queries: queries}
 }
 
-func (ur *userRepository) Add(ctx *gin.Context, username string, password string, email string) error {
-	return ur.queries.CreateUser(ctx, database.CreateUserParams{Username: username, Password: password, Email: email})
+func (repo *repository) Add(ctx *gin.Context, username string, password string, email string) error {
+	return repo.queries.CreateUser(ctx, database.CreateUserParams{Username: username, Password: password, Email: email})
 }
 
-func (ur *userRepository) UserExists(ctx *gin.Context, username, email string) bool {
-	count, _ := ur.queries.UserExists(ctx, database.UserExistsParams{Username: username, Email: email})
+func (repo *repository) UserExists(ctx *gin.Context, username, email string) bool {
+	count, _ := repo.queries.UserExists(ctx, database.UserExistsParams{Username: username, Email: email})
 	return count > 0
 }
 
-func (ur *userRepository) FindUserByUsername(ctx *gin.Context, username string) (database.User, error) {
-	var user, err = ur.queries.GetUserByUsername(ctx, username)
+func (repo *repository) FindUserByUsername(ctx *gin.Context, username string) (database.User, error) {
+	var user, err = repo.queries.GetUserByUsername(ctx, username)
 	return user, err
 }
