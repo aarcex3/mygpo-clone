@@ -14,7 +14,7 @@ TEST_DIR := ./test
 init_db:
 	rm -f mygpo-clone.sqlite3
 	sqlite3 mygpo-clone.sqlite3 < ./internals/sql/schemas.sql
-	
+	sqlite3 mygpo-clone.sqlite3 < ./init.sql
 # Format the Go source files
 format:
 	$(FMT) ./
@@ -35,3 +35,7 @@ run:
 # Build and run Docker container
 docker:
 	docker-compose up --build
+
+sqlc:
+# Run sqlc generate
+	sqlc generate -f ./internals/sqlc.yaml

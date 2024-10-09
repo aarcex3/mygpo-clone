@@ -43,7 +43,7 @@ func New(router *gin.Engine, db *sql.DB, config *config.Config) *application {
 	}
 	directory := apiV1.Group("/")
 	{
-		directory.GET("/tags", directoryController.RetrieveTopTags)
+		directory.GET("/tags/:limit", directoryController.GetTopTags)
 	}
 
 	return app

@@ -6,7 +6,7 @@ import (
 )
 
 type TagService interface {
-	GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error)
+	FindTopTags(ctx *gin.Context, limit int64) ([]database.ListTopTagsRow, error)
 }
 
 type service struct {
@@ -17,7 +17,7 @@ func Service(repo TagRepository) *service {
 	return &service{tagRepository: repo}
 }
 
-func (s *service) GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error) {
-	tags, err := s.tagRepository.GetTopTags(ctx)
+func (s *service) FindTopTags(ctx *gin.Context, limit int64) ([]database.ListTopTagsRow, error) {
+	tags, err := s.tagRepository.ListTopTags(ctx, limit)
 	return tags, err
 }

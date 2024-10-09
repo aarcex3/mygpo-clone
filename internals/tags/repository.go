@@ -6,7 +6,7 @@ import (
 )
 
 type TagRepository interface {
-	GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error)
+	ListTopTags(ctx *gin.Context, limit int64) ([]database.ListTopTagsRow, error)
 }
 
 type repository struct {
@@ -17,7 +17,9 @@ func Repository(queries database.Queries) *repository {
 	return &repository{queries: queries}
 }
 
-func (repo *repository) GetTopTags(ctx *gin.Context) ([]database.TopTagsRow, error) {
-	tags, err := repo.queries.TopTags(ctx)
+func (repo *repository) ListTopTags(ctx *gin.Context, limit int64) ([]database.ListTopTagsRow, error) {
+
+	tags, err := repo.queries.ListTopTags(ctx, int64(limit))
+
 	return tags, err
 }

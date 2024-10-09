@@ -9,25 +9,34 @@ import (
 	"context"
 )
 
-const topTags = `-- name: TopTags :many
-SELECT title, code, usage FROM tags ORDER BY usage DESC LIMIT 10
+const listTopTags = `-- name: ListTopTags :many
+SELECT
+    title,
+    code,
+    usage
+FROM
+    tags
+ORDER BY
+    usage DESC
+LIMIT
+    ?
 `
 
-type TopTagsRow struct {
+type ListTopTagsRow struct {
 	Title string
 	Code  string
 	Usage int64
 }
 
-func (q *Queries) TopTags(ctx context.Context) ([]TopTagsRow, error) {
-	rows, err := q.db.QueryContext(ctx, topTags)
+func (q *Queries) ListTopTags(ctx context.Context, limit int64) ([]ListTopTagsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listTopTags, limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []TopTagsRow
+	var items []ListTopTagsRow
 	for rows.Next() {
-		var i TopTagsRow
+		var i ListTopTagsRow
 		if err := rows.Scan(&i.Title, &i.Code, &i.Usage); err != nil {
 			return nil, err
 		}
