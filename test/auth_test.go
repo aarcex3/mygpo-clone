@@ -36,15 +36,14 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-type testCase struct {
-	name           string
-	form           url.Values
-	expectedStatus int
-	expectedBody   string
-}
-
 func TestRegistration(t *testing.T) {
-	testCases := []testCase{
+	testCases := []struct {
+		name           string
+		form           url.Values
+		expectedStatus int
+		expectedBody   string
+	}{
+
 		{
 			name: "Successful Registration",
 			form: url.Values{
@@ -76,7 +75,6 @@ func TestRegistration(t *testing.T) {
 			expectedBody:   "Invalid request data",
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			req, err := http.NewRequest("POST", "/v1/auth/registration", bytes.NewBufferString(tc.form.Encode()))
@@ -106,7 +104,12 @@ func TestLogin(t *testing.T) {
 	res := httptest.NewRecorder()
 	router.ServeHTTP(res, req)
 
-	testCases := []testCase{
+	testCases := []struct {
+		name           string
+		form           url.Values
+		expectedStatus int
+		expectedBody   string
+	}{
 		{
 			name: "Failed Login",
 			form: url.Values{

@@ -22,31 +22,31 @@ func SetupTestDatabase(config *config.Config) (*sql.DB, func()) {
 		log.Fatalf("Could not create table: %v", err)
 	}
 
-	// if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS tags (
-	// 	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	// 	title TEXT NOT NULL,
-	// 	code TEXT NOT NULL UNIQUE,
-	// 	usage INTEGER NOT NULL DEFAULT 0
-	// );`); err != nil {
-	// 	log.Fatalf("Could not create table: %v", err)
-	// }
+	if _, err := db.Exec(`CREATE TABLE IF NOT EXISTS tags (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		title TEXT NOT NULL,
+		code TEXT NOT NULL UNIQUE,
+		usage INTEGER NOT NULL DEFAULT 0
+	);`); err != nil {
+		log.Fatalf("Could not create table: %v", err)
+	}
 
-	// _, err = db.Exec(`
-	// 	INSERT INTO tags (title, code, usage) VALUES
-	// 	('Technology', 'technology', 530),
-	// 	('Science', 'science', 410),
-	// 	('Health', 'health', 325),
-	// 	('Education', 'education', 275),
-	// 	('Finance', 'finance', 600),
-	// 	('Sports', 'sports', 475),
-	// 	('Travel', 'travel', 200),
-	// 	('Food', 'food', 150),
-	// 	('Art', 'art', 100),
-	// 	('History', 'history', 50);
-	// `)
-	// if err != nil {
-	// 	log.Fatalf("Could not insert data into tags table: %v", err)
-	// }
+	_, err = db.Exec(`
+		INSERT INTO tags (title, code, usage) VALUES
+		('Technology', 'technology', 530),
+		('Science', 'science', 410),
+		('Health', 'health', 325),
+		('Education', 'education', 275),
+		('Finance', 'finance', 600),
+		('Sports', 'sports', 475),
+		('Travel', 'travel', 200),
+		('Food', 'food', 150),
+		('Art', 'art', 100),
+		('History', 'history', 50);
+	`)
+	if err != nil {
+		log.Fatalf("Could not insert data into tags table: %v", err)
+	}
 
 	return db, func() {
 		db.Close()
