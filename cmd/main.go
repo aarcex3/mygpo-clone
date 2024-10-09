@@ -15,13 +15,13 @@ import (
 
 func main() {
 	config := config.LoadConfig("dev")
-	server := gin.Default()
+	router := gin.Default()
 	db, err := sql.Open(config.DatabaseEngine, config.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	app := app.New(server, db, config)
+	app := app.New(router, db, config)
 	app.Run()
 
 	quit := make(chan os.Signal, 1)
