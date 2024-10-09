@@ -2,9 +2,11 @@ package test
 
 import (
 	"bytes"
+	"database/sql"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"testing"
 
 	"github.com/aarcex3/mygpo-clone/config"
@@ -14,7 +16,26 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Test Case structure
+var router *gin.Engine
+var db *sql.DB
+var cleanup func()
+
+func TestMain(m *testing.M) {
+
+	cfg := config.LoadConfig("test")
+
+	db, cleanup = SetupTestDatabase(cfg)
+
+	router = gin.Default()
+	_ = app.New(router, db, cfg)
+
+	code := m.Run()
+
+	cleanup()
+
+	os.Exit(code)
+}
+
 type testCase struct {
 	name           string
 	form           url.Values
@@ -23,14 +44,6 @@ type testCase struct {
 }
 
 func TestRegistration(t *testing.T) {
-
-	cfg := config.LoadConfig("test")
-	router := gin.Default()
-	db, cleanup := SetupTestDatabase(cfg)
-	defer cleanup()
-
-	_ = app.New(router, db, cfg)
-
 	testCases := []testCase{
 		{
 			name: "Successful Registration",
@@ -75,7 +88,68 @@ func TestRegistration(t *testing.T) {
 
 			assert.Equal(t, tc.expectedStatus, res.Code)
 			assert.Contains(t, res.Body.String(), tc.expectedBody)
+		})
+	}
+}
 
+func TestLogin(t *testing.T) {
+	form := url.Values{
+		"username": {"testuser2"},
+		"password": {"testpassword2"},
+		"email":    {"testuser2@example.com"},
+	}
+
+	req, err := http.NewRequest("POST", "/v1/auth/registration", bytes.NewBufferString(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	assert.NoError(t, err)
+
+	res := httptest.NewRecorder()
+	router.ServeHTTP(res, req)
+
+	testCases := []testCase{
+		{
+			name: "Failed Login",
+			form: url.Values{
+				"username": {"testuser"},
+				"password": {"wrongpassword"},
+			},
+			expectedStatus: http.StatusUnauthorized,
+			expectedBody:   "Login error",
+		},
+		{
+			name: "Invalid Request Data",
+			form: url.Values{
+				"username": {},
+				"password": {},
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "Invalid request data",
+		},
+		{
+			name: "Successful Login",
+			form: url.Values{
+				"username": {"testuser2"},
+				"password": {"testpassword2"},
+			},
+			expectedStatus: http.StatusOK,
+			expectedBody:   "Login successful",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req, err := http.NewRequest("POST", "/v1/auth/login", bytes.NewBufferString(tc.form.Encode()))
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			assert.NoError(t, err)
+
+			res := httptest.NewRecorder()
+			router.ServeHTTP(res, req)
+
+			assert.Equal(t, tc.expectedStatus, res.Code)
+			assert.Contains(t, res.Body.String(), tc.expectedBody)
+			if tc.expectedBody == "Successful Login" {
+				assert.Contains(t, res.Header(), "Bearer")
+			}
 		})
 	}
 }
