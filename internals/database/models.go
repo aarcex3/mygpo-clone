@@ -4,6 +4,22 @@
 
 package database
 
+import (
+	"database/sql"
+)
+
+type Podcast struct {
+	ID          int64
+	Website     sql.NullString
+	MygpoLink   sql.NullString
+	Description string
+	Subscribers int64
+	Title       string
+	Author      string
+	Url         string
+	LogoUrl     sql.NullString
+}
+
 type Tag struct {
 	ID    int64
 	Title string

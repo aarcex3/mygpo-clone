@@ -13,3 +13,16 @@ CREATE TABLE
         code TEXT NOT NULL UNIQUE,
         usage INTEGER NOT NULL DEFAULT 0
     );
+
+CREATE TABLE
+    podcasts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        website TEXT,
+        mygpo_link TEXT UNIQUE,
+        description TEXT NOT NULL,
+        subscribers INTEGER NOT NULL DEFAULT 0,
+        title TEXT NOT NULL UNIQUE,
+        author TEXT NOT NULL,
+        url TEXT NOT NULL UNIQUE,
+        logo_url TEXT
+    );
