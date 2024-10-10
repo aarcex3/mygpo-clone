@@ -46,5 +46,5 @@ func (c *controller) GetPodcastData(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "Podcast not found"})
 		return
 	}
-	ctx.JSON(http.StatusOK, podcast)
+	ctx.JSONP(http.StatusOK, podcast)
 }

@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"database/sql"
 )
 
 const getPodcastByUrl = `-- name: GetPodcastByUrl :one
@@ -28,13 +27,13 @@ where
 
 type GetPodcastByUrlRow struct {
 	Title       string
-	Website     sql.NullString
-	MygpoLink   sql.NullString
+	Website     string
+	MygpoLink   string
 	Description string
 	Subscribers int64
 	Author      string
 	Url         string
-	LogoUrl     sql.NullString
+	LogoUrl     interface{}
 }
 
 func (q *Queries) GetPodcastByUrl(ctx context.Context, url string) (GetPodcastByUrlRow, error) {

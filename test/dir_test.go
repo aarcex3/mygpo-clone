@@ -57,4 +57,59 @@ func TestDirectory(t *testing.T) {
 		assert.Contains(t, res.Body.String(), "Invalid limit intput")
 
 	})
+
+	t.Run("Get Podcast Data", func(t *testing.T) {
+		url := "/v1/data/podcast?url=" + "http://feeds.feedburner.com/coverville"
+
+		req, err := http.NewRequest("GET", url, nil)
+		assert.NoError(t, err)
+
+		res := httptest.NewRecorder()
+		router.ServeHTTP(res, req)
+
+		assert.Equal(t, http.StatusOK, res.Code)
+		expectedContent := `{
+				"Title": "Coverville",
+				"Website": "http://coverville.com",
+				"MygpoLink": "http://www.gpodder.net/podcast/16124",
+				"Description": "The best cover songs, delivered to your ears two to three times a week!",
+				"Subscribers": 19,
+				"Author": "Brian Ibbott",
+				"Url": "http://feeds.feedburner.com/coverville",
+				"LogoUrl": "http://www.coverville.com/art/coverville_iTunes300.jpg"
+			}`
+
+		actualContent := res.Body.String()
+
+		assert.JSONEq(t, expectedContent, actualContent, "Response body should match expected JSON content")
+
+	})
+	t.Run("Get Podcast Data Not Found", func(t *testing.T) {
+		url := "/v1/data/podcast?url=" + "http://no.url.com"
+
+		req, err := http.NewRequest("GET", url, nil)
+		assert.NoError(t, err)
+
+		res := httptest.NewRecorder()
+		router.ServeHTTP(res, req)
+
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		assert.Contains(t, res.Body.String(), "Podcast not found")
+
+	})
+	t.Run("Get Podcast Data No URL", func(t *testing.T) {
+		url := "/v1/data/podcast"
+
+		req, err := http.NewRequest("GET", url, nil)
+		assert.NoError(t, err)
+
+		res := httptest.NewRecorder()
+		router.ServeHTTP(res, req)
+
+		assert.Equal(t, http.StatusBadRequest, res.Code)
+
+		assert.Contains(t, res.Body.String(), "Podcast url required")
+
+	})
 }

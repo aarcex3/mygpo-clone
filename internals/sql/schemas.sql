@@ -17,12 +17,12 @@ CREATE TABLE
 CREATE TABLE
     podcasts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        website TEXT,
-        mygpo_link TEXT UNIQUE,
+        website TEXT NOT NULL,
+        mygpo_link TEXT NOT NULL UNIQUE,
         description TEXT NOT NULL,
         subscribers INTEGER NOT NULL DEFAULT 0,
         title TEXT NOT NULL UNIQUE,
         author TEXT NOT NULL,
         url TEXT NOT NULL UNIQUE,
-        logo_url TEXT
+        logo_url TEXT DEFAULT ""
     );
