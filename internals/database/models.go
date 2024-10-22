@@ -4,6 +4,22 @@
 
 package database
 
+import (
+	"time"
+)
+
+type Episode struct {
+	ID           int64
+	Title        string
+	Url          string
+	PodcastTitle string
+	PodcastUrl   string
+	Description  string
+	Website      string
+	Released     time.Time
+	MygpoLink    string
+}
+
 type Podcast struct {
 	ID          int64
 	Website     string

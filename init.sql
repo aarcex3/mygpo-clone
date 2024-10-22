@@ -86,3 +86,67 @@ VALUES
         'http://feeds.feedburner.com/timferriss',
         'http://timferriss.com/images/logo.png'
     );
+
+-- Insert multiple podcast episodes
+INSERT INTO
+    episodes (
+        title,
+        url,
+        podcast_title,
+        podcast_url,
+        description,
+        website,
+        released,
+        mygpo_link
+    )
+VALUES
+    (
+        'TWiT 245: No Hitler For You',
+        'http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/twit/twit0245.mp3',
+        'this WEEK in TECH - MP3 Edition',
+        'http://leo.am/podcasts/twit',
+        'A roundtable discussion about the latest trends in technology.',
+        'http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/twit/twit0245.mp3',
+        '2010-12-25T00:30:00',
+        'http://gpodder.net/episode/1046492'
+    ),
+    (
+        'Coverville 123: Best of Beatles Covers',
+        'http://www.coverville.com/audio/Coverville123.mp3',
+        'Coverville',
+        'http://feeds.feedburner.com/coverville',
+        'An hour of some of the best Beatles covers from across the years.',
+        'http://coverville.com',
+        '2011-01-05T12:00:00',
+        'http://gpodder.net/episode/54321'
+    ),
+    (
+        'Freakonomics Episode 156: The Upside of Quitting',
+        'http://freakonomics.com/audio/freakonomics156.mp3',
+        'Freakonomics Radio',
+        'http://feeds.feedburner.com/freakonomics',
+        'Why quitting can sometimes be the best thing to do.',
+        'http://freakonomics.com',
+        '2012-03-15T14:00:00',
+        'http://gpodder.net/episode/65432'
+    ),
+    (
+        'Serial Episode 9: To Be Suspected',
+        'http://serialpodcast.org/audio/serial09.mp3',
+        'Serial',
+        'http://feeds.serialpodcast.org/serialpodcast',
+        'In this episode, we delve deeper into the investigation of the crime.',
+        'http://serialpodcast.org',
+        '2014-11-06T09:30:00',
+        'http://gpodder.net/episode/76543'
+    ),
+    (
+        'Radiolab: The Trust Engineers',
+        'http://radiolab.org/audio/radiolab-trust.mp3',
+        'Radiolab',
+        'http://feeds.radiolab.org/radiolab',
+        'Exploring the engineers who build systems of trust in the digital age.',
+        'http://radiolab.org',
+        '2015-02-19T16:00:00',
+        'http://gpodder.net/episode/87654'
+    );

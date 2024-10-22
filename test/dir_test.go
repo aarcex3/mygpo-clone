@@ -112,4 +112,60 @@ func TestDirectory(t *testing.T) {
 		assert.Contains(t, res.Body.String(), "Podcast url required")
 
 	})
+
+	t.Run("Get Episode Data", func(t *testing.T) {
+		url := "/v1/data/episode?url=" + "http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/twit/twit0245.mp3"
+
+		req, err := http.NewRequest("GET", url, nil)
+		assert.NoError(t, err)
+
+		res := httptest.NewRecorder()
+		router.ServeHTTP(res, req)
+
+		assert.Equal(t, http.StatusOK, res.Code)
+		expectedContent := `{
+					"Title": "TWiT 245: No Hitler For You",
+					"Url": "http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/twit/twit0245.mp3",
+					"PodcastTitle": "this WEEK in TECH - MP3 Edition",
+					"PodcastUrl": "http://leo.am/podcasts/twit",
+					"Description": "A roundtable discussion about the latest trends in technology.",
+					"Website": "http://www.podtrac.com/pts/redirect.mp3/aolradio.podcast.aol.com/twit/twit0245.mp3",
+					"Released": "2010-12-25T00:30:00Z",
+					"MygpoLink": "http://gpodder.net/episode/1046492"
+				}`
+
+		actualContent := res.Body.String()
+
+		assert.JSONEq(t, expectedContent, actualContent, "Response body should match expected JSON content")
+
+	})
+
+	t.Run("Get Episode Data Not Found", func(t *testing.T) {
+		url := "/v1/data/episode?url=" + "http://no.url.com"
+
+		req, err := http.NewRequest("GET", url, nil)
+		assert.NoError(t, err)
+
+		res := httptest.NewRecorder()
+		router.ServeHTTP(res, req)
+
+		assert.Equal(t, http.StatusNotFound, res.Code)
+
+		assert.Contains(t, res.Body.String(), "Episode not found")
+
+	})
+	t.Run("Get Episode Data No URL", func(t *testing.T) {
+		url := "/v1/data/episode"
+
+		req, err := http.NewRequest("GET", url, nil)
+		assert.NoError(t, err)
+
+		res := httptest.NewRecorder()
+		router.ServeHTTP(res, req)
+
+		assert.Equal(t, http.StatusBadRequest, res.Code)
+
+		assert.Contains(t, res.Body.String(), "Episode url required")
+
+	})
 }

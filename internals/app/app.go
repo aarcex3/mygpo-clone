@@ -9,6 +9,7 @@ import (
 	"github.com/aarcex3/mygpo-clone/internals/auth"
 	"github.com/aarcex3/mygpo-clone/internals/database"
 	"github.com/aarcex3/mygpo-clone/internals/directory"
+	"github.com/aarcex3/mygpo-clone/internals/episode"
 	"github.com/aarcex3/mygpo-clone/internals/podcast"
 	"github.com/aarcex3/mygpo-clone/internals/tags"
 	"github.com/aarcex3/mygpo-clone/internals/users"
@@ -29,13 +30,15 @@ func New(router *gin.Engine, db *sql.DB, config *config.Config) *application {
 	userRepo := users.Repository(*queries)
 	tagRepo := tags.Repository(*queries)
 	podcastRepo := podcast.Repository(*queries)
+	episodeRepo := episode.Repository(*queries)
 
 	authService := auth.Service(userRepo, app.config)
 	tagService := tags.Service(tagRepo)
 	podcastService := podcast.Service(podcastRepo)
+	episodeService := episode.Service(episodeRepo)
 
 	authController := auth.Controller(authService)
-	directoryController := directory.Controller(tagService, podcastService)
+	directoryController := directory.Controller(tagService, podcastService, episodeService)
 
 	apiV1 := app.router.Group("/v1")
 	auth := apiV1.Group("/auth")
@@ -48,6 +51,7 @@ func New(router *gin.Engine, db *sql.DB, config *config.Config) *application {
 	{
 		directory.GET("/tags/:limit", directoryController.GetTopTags)
 		directory.GET("/data/podcast", directoryController.GetPodcastData)
+		directory.GET("/data/episode", directoryController.GetEpisodeData)
 	}
 
 	return app

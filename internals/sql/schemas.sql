@@ -26,3 +26,16 @@ CREATE TABLE
         url TEXT NOT NULL UNIQUE,
         logo_url TEXT DEFAULT ""
     );
+
+CREATE TABLE
+    episodes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        url TEXT NOT NULL,
+        podcast_title TEXT NOT NULL,
+        podcast_url TEXT NOT NULL,
+        description TEXT NOT NULL,
+        website TEXT NOT NULL,
+        released DATETIME NOT NULL,
+        mygpo_link TEXT NOT NULL
+    );
