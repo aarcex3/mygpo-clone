@@ -10,16 +10,16 @@ type TagRepository interface {
 }
 
 type repository struct {
-	queries database.Queries
+	db database.Queries
 }
 
 func Repository(queries database.Queries) *repository {
-	return &repository{queries: queries}
+	return &repository{db: queries}
 }
 
-func (repo *repository) ListTopTags(ctx *gin.Context, limit int64) ([]database.ListTopTagsRow, error) {
+func (r *repository) ListTopTags(ctx *gin.Context, limit int64) ([]database.ListTopTagsRow, error) {
 
-	tags, err := repo.queries.ListTopTags(ctx, int64(limit))
+	tags, err := r.db.ListTopTags(ctx, int64(limit))
 
 	return tags, err
 }

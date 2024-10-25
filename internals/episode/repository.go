@@ -10,13 +10,13 @@ type episodeRepository interface {
 }
 
 type repository struct {
-	queries database.Queries
+	db database.Queries
 }
 
 func Repository(queries database.Queries) *repository {
-	return &repository{queries: queries}
+	return &repository{db: queries}
 }
 
 func (r *repository) GetEpisodeByUrl(ctx *gin.Context, url string) (database.GetEpisodeByUrlRow, error) {
-	return r.queries.GetEpisodeByUrl(ctx, url)
+	return r.db.GetEpisodeByUrl(ctx, url)
 }

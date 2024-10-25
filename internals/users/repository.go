@@ -12,23 +12,23 @@ type UserRepository interface {
 }
 
 type repository struct {
-	queries database.Queries
+	db database.Queries
 }
 
 func Repository(queries database.Queries) *repository {
-	return &repository{queries: queries}
+	return &repository{db: queries}
 }
 
 func (repo *repository) Add(ctx *gin.Context, username string, password string, email string) error {
-	return repo.queries.CreateUser(ctx, database.CreateUserParams{Username: username, Password: password, Email: email})
+	return repo.db.CreateUser(ctx, database.CreateUserParams{Username: username, Password: password, Email: email})
 }
 
 func (repo *repository) UserExists(ctx *gin.Context, username, email string) bool {
-	count, _ := repo.queries.UserExists(ctx, database.UserExistsParams{Username: username, Email: email})
+	count, _ := repo.db.UserExists(ctx, database.UserExistsParams{Username: username, Email: email})
 	return count > 0
 }
 
 func (repo *repository) FindUserByUsername(ctx *gin.Context, username string) (database.User, error) {
-	var user, err = repo.queries.GetUserByUsername(ctx, username)
+	var user, err = repo.db.GetUserByUsername(ctx, username)
 	return user, err
 }

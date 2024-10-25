@@ -10,13 +10,13 @@ type podcastRepository interface {
 }
 
 type repository struct {
-	queries database.Queries
+	db database.Queries
 }
 
 func Repository(queries database.Queries) *repository {
-	return &repository{queries: queries}
+	return &repository{db: queries}
 }
 
 func (r *repository) GetPodcastByUrl(ctx *gin.Context, url string) (database.GetPodcastByUrlRow, error) {
-	return r.queries.GetPodcastByUrl(ctx, url)
+	return r.db.GetPodcastByUrl(ctx, url)
 }
